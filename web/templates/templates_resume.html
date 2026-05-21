@@ -1,0 +1,13 @@
+{% extends "templates_base.html" %}
+{% block title %}Resume — job-bot{% endblock %}
+
+{% block content %}
+<h1>Resume</h1>
+
+<!-- TODO: render a live HTML preview of the resume data -->
+<!-- TODO: add per-job tailoring controls (highlight skills matching job description) -->
+
+<form method="POST" action="{{ url_for('main.compile_resume') }}">
+  <button type="submit">Compile PDF</button>
+</form>
+{% endblock %}

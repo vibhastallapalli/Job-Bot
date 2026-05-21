@@ -1,0 +1,80 @@
+{
+  "secret_key": "change-me-before-production",
+  "database_path": "job_bot.db",
+  "resume": {
+    "template": "modules/resume/templates/templates_resume.tex",
+    "output_dir": "output/resumes",
+    "latex_compiler": "pdflatex"
+  },
+  "job_search": {
+    "keywords": [
+      "mechanical engineering coop",
+      "mechanical engineering internship"
+    ],
+    "locations": [
+      "Canada",
+      "USA"
+    ],
+    "sources": [
+      "linkedin"
+    ],
+    "blacklisted_companies": [],
+    "job_types": [
+      "Co-op",
+      "Internship"
+    ],
+    "term_lengths": [
+      "4-month"
+    ],
+    "work_types": [
+      "Remote",
+      "Hybrid",
+      "On-site"
+    ]
+  },
+  "linkedin": {
+    "email": "your-email@example.com",
+    "password": "your-linkedin-password",
+    "applicant_filter": "under_50",
+    "max_pages": 3,
+    "date_posted": "past_week",
+    "state_file": "linkedin_state.json"
+  },
+  "browser": {
+    "headless": true,
+    "slow_mo_ms": 50,
+    "timeout_ms": 30000
+  },
+  "applicant": {
+    "name": "Your Name",
+    "email": "your-email@example.com",
+    "phone": "1XXXXXXXXXX",
+    "linkedin": "https://www.linkedin.com/in/your-profile/",
+    "github": "https://github.com/your-username",
+    "website": "",
+    "city": "Your City",
+    "state": "Your Province/State",
+    "country": "Your Country"
+  },
+  "microsoft": {
+    "client_id": "",
+    "client_secret": "",
+    "tenant_id": "common",
+    "redirect_uri": "http://localhost:5000/email/auth/callback"
+  },
+  "answers": {
+    "work_authorization": "No",
+    "requires_sponsorship": "Yes",
+    "willing_to_relocate": "Yes",
+    "desired_salary": "",
+    "years_experience": "1",
+    "cover_letter": "",
+    "earliest_start_date": "",
+    "gender": "Decline to self-identify",
+    "race": "Decline to self-identify",
+    "veteran_status": "I am not a protected veteran",
+    "disability_status": "I do not have a disability",
+    "education_level": "Bachelor's Degree",
+    "experience_level": "Mid-Senior level"
+  }
+}

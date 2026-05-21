@@ -1,0 +1,45 @@
+{% extends "templates_base.html" %}
+{% block title %}Logs — job-bot{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Activity Logs</h1>
+  <p class="page-subtitle">Last 200 events from all modules</p>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Level</th>
+          <th>Module</th>
+          <th>Message</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td><span class="badge badge--{{ log.level | lower }}">{{ log.level }}</span></td>
+          <td><span class="log-module">{{ log.module }}</span></td>
+          <td><span class="log-msg">{{ log.message }}</span></td>
+          <td><span class="log-time">{{ log.created_at | fmtdt }}</span></td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4">
+            <div class="empty-state">
+              <div class="empty-state__title">No log entries yet</div>
+              <div class="empty-state__desc">
+                Events from the scraper, automation, and resume compiler will appear here.
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

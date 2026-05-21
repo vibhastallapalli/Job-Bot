@@ -1,0 +1,101 @@
+{% extends "templates_base.html" %}
+{% block title %}Jobs — job-bot{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Job Listings</h1>
+  <p class="page-subtitle">All discovered opportunities</p>
+</div>
+
+<div class="actions-row">
+  <div class="filter-tabs">
+    <a href="{{ url_for('main.jobs') }}?status=all"
+       class="filter-tab{% if status == 'all' %} active{% endif %}">
+      All <span class="filter-tab__count">{{ counts.all }}</span>
+    </a>
+    <a href="{{ url_for('main.jobs') }}?status=discovered"
+       class="filter-tab{% if status == 'discovered' %} active{% endif %}">
+      Discovered <span class="filter-tab__count">{{ counts.discovered }}</span>
+    </a>
+    <a href="{{ url_for('main.jobs') }}?status=applied"
+       class="filter-tab{% if status == 'applied' %} active{% endif %}">
+      Applied <span class="filter-tab__count">{{ counts.applied }}</span>
+    </a>
+    <a href="{{ url_for('main.jobs') }}?status=interview"
+       class="filter-tab{% if status == 'interview' %} active{% endif %}">
+      Interview <span class="filter-tab__count">{{ counts.interview }}</span>
+    </a>
+    <a href="{{ url_for('main.jobs') }}?status=rejected"
+       class="filter-tab{% if status == 'rejected' %} active{% endif %}">
+      Rejected <span class="filter-tab__count">{{ counts.rejected }}</span>
+    </a>
+  </div>
+  <form method="POST" action="{{ url_for('main.scrape_jobs') }}" class="inline-form"
+        onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').textContent='Starting…'">
+    <button class="btn btn--primary btn--sm" type="submit">Scrape new jobs</button>
+  </form>
+</div>
+
+{# Live scrape progress panel — shown/hidden by main.js polling /jobs/scrape/status #}
+<div id="scrape-live-panel" style="display:none;margin-bottom:1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+  <div style="display:flex;align-items:center;gap:.6rem;padding:.65rem 1rem;background:var(--surface-2);border-bottom:1px solid var(--border)">
+    <span id="scrape-spinner" class="scrape-spinner" style="display:none"></span>
+    <span id="scrape-status-text" style="font-size:.83rem;font-weight:600;color:var(--text)">Last scrape</span>
+    <a href="{{ url_for('main.logs') }}" style="margin-left:auto;font-size:.76rem;color:var(--accent)">Full logs →</a>
+  </div>
+  <div id="scrape-log-entries" class="live-log-entries"></div>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Company</th>
+          <th>Location</th>
+          <th>Source</th>
+          <th>Status</th>
+          <th>Discovered</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for job in jobs %}
+        <tr>
+          <td><a class="job-link" href="{{ url_for('main.job_detail', job_id=job.id) }}">{{ job.title }}</a></td>
+          <td style="font-weight:500">{{ job.company }}</td>
+          <td class="td-muted">{{ job.location }}</td>
+          <td><span class="source-tag">{{ job.source }}</span></td>
+          <td><span class="badge badge--{{ job.status }}">{{ job.status }}</span></td>
+          <td class="td-muted">{{ job.discovered_at | fmtdt }}</td>
+          <td class="td-actions" style="display:flex;gap:.35rem;align-items:center">
+            <a href="{{ job.url }}" target="_blank" rel="noopener" class="btn btn--ghost btn--xs">Open</a>
+            <a href="{{ url_for('main.job_detail', job_id=job.id) }}" class="btn btn--ghost btn--xs">Detail</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7">
+            <div class="empty-state">
+              <div class="empty-state__title">No jobs found</div>
+              <div class="empty-state__desc">
+                {% if status != 'all' %}
+                  No jobs with status "{{ status }}".
+                  <a href="{{ url_for('main.jobs') }}" style="color:var(--accent)">View all</a>
+                {% else %}
+                  Run a scrape or load demo data to populate your job list.
+                  <form method="POST" action="{{ url_for('main.seed_demo') }}" style="margin-top:.75rem">
+                    <button class="btn btn--primary btn--sm" type="submit">Load demo data</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

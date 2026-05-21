@@ -1,0 +1,87 @@
+{% extends "templates_base.html" %}
+{% block title %}{{ job.title }} at {{ job.company }} — job-bot{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('main.jobs') }}" class="back-link">&#8592; Back to jobs</a>
+
+<div class="page-header">
+  <h1 class="page-title">{{ job.title }}</h1>
+  <p class="page-subtitle">{{ job.company }}&ensp;&middot;&ensp;{{ job.location }}</p>
+</div>
+
+<div class="card">
+
+  <div class="detail-meta">
+    <div>
+      <div class="meta-label">Status</div>
+      <div class="meta-value">
+        <span class="badge badge--{{ job.status }}">{{ job.status }}</span>
+      </div>
+    </div>
+    <div>
+      <div class="meta-label">Source</div>
+      <div class="meta-value"><span class="source-tag">{{ job.source }}</span></div>
+    </div>
+    <div>
+      <div class="meta-label">Location</div>
+      <div class="meta-value">{{ job.location or '—' }}</div>
+    </div>
+    <div>
+      <div class="meta-label">Discovered</div>
+      <div class="meta-value">{{ job.discovered_at | fmtdt }}</div>
+    </div>
+    <div>
+      <div class="meta-label">Last updated</div>
+      <div class="meta-value">{{ job.updated_at | fmtdt }}</div>
+    </div>
+    {% if job.applicant_count %}
+    <div>
+      <div class="meta-label">Applicants</div>
+      <div class="meta-value">{{ job.applicant_count }}</div>
+    </div>
+    {% endif %}
+    {% if job.easy_apply %}
+    <div>
+      <div class="meta-label">Easy Apply</div>
+      <div class="meta-value"><span class="badge badge--interview">Yes</span></div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="detail-body">
+    <form method="POST" action="{{ url_for('main.update_job_status', job_id=job.id) }}"
+          style="display:flex;gap:.75rem;align-items:flex-end">
+      <div class="form-group" style="margin:0;flex:1;max-width:220px">
+        <label class="form-label">Update status</label>
+        <select name="status" class="form-select">
+          {% for s in ['discovered', 'applied', 'interview', 'offer', 'rejected', 'ignored'] %}
+          <option value="{{ s }}"{% if job.status == s %} selected{% endif %}>
+            {{ s | capitalize }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <button class="btn btn--primary" type="submit">Save</button>
+    </form>
+  </div>
+
+  <div class="detail-actions">
+    <a href="{{ job.url }}" target="_blank" rel="noopener" class="btn btn--primary">
+      Open job posting &#8599;
+    </a>
+    <form method="POST" action="{{ url_for('main.apply_job', job_id=job.id) }}" class="inline-form">
+      <input type="hidden" name="next" value="{{ url_for('main.job_detail', job_id=job.id) }}" />
+      <button class="btn btn--success" type="submit">Mark as applied</button>
+    </form>
+    {% if job.easy_apply and job.status not in ('applied', 'interview') %}
+    <form method="POST" action="{{ url_for('main.automate_job', job_id=job.id) }}" class="inline-form">
+      <button class="btn btn--accent" type="submit"
+              onclick="return confirm('Start Easy Apply automation for this job?')">
+        &#9654; Auto Apply
+      </button>
+    </form>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends "templates_base.html" %}
+{% block title %}Dashboard — job-bot{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-subtitle">Your job search pipeline at a glance</p>
+  </div>
+  <div style="display:flex;gap:.6rem;align-items:center">
+    {% if outlook_connected %}
+    <form method="POST" action="{{ url_for('main.email_sync') }}" class="inline-form">
+      <button class="btn btn--accent" type="submit" title="Scan your Outlook inbox and update job statuses">
+        &#9993; Sync Email
+      </button>
+    </form>
+    <form method="POST" action="{{ url_for('main.email_disconnect') }}" class="inline-form">
+      <button class="btn btn--ghost btn--sm" type="submit"
+              onclick="return confirm('Disconnect Outlook?')"
+              style="opacity:.6" title="Disconnect Outlook">&#10005;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('main.email_auth') }}" class="btn btn--ghost">
+      &#9993; Connect Outlook
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card__value stat-card__value--accent">{{ stats.total }}</div>
+    <div class="stat-card__label">Jobs discovered</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value stat-card__value--amber">{{ stats.applied }}</div>
+    <div class="stat-card__label">Applications sent</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value stat-card__value--green">{{ stats.interviews }}</div>
+    <div class="stat-card__label">Interviews</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value stat-card__value--red">{{ stats.rejected }}</div>
+    <div class="stat-card__label">Rejected</div>
+  </div>
+</div>
+
+{% if stats.total == 0 %}
+
+<div class="card">
+  <div class="empty-state">
+    <div class="empty-state__title">No job data yet</div>
+    <div class="empty-state__desc">
+      Load demo data to see the dashboard in action, or configure your search settings and run a scrape.
+    </div>
+    <div style="display:flex;gap:.75rem;margin-top:.25rem">
+      <form method="POST" action="{{ url_for('main.seed_demo') }}">
+        <button class="btn btn--primary" type="submit">Load demo data</button>
+      </form>
+      <a href="{{ url_for('main.settings') }}" class="btn btn--ghost">Configure settings</a>
+    </div>
+  </div>
+</div>
+
+{% else %}
+
+<div class="card">
+  <div class="card__header">
+    <span class="card__title">Recent Jobs</span>
+    <a href="{{ url_for('main.jobs') }}" class="btn btn--ghost btn--sm">View all</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Company</th>
+          <th>Location</th>
+          <th>Source</th>
+          <th>Status</th>
+          <th>Discovered</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for job in recent_jobs %}
+        <tr>
+          <td><a class="job-link" href="{{ url_for('main.job_detail', job_id=job.id) }}">{{ job.title }}</a></td>
+          <td style="font-weight:500">{{ job.company }}</td>
+          <td class="td-muted">{{ job.location }}</td>
+          <td><span class="source-tag">{{ job.source }}</span></td>
+          <td><span class="badge badge--{{ job.status }}">{{ job.status }}</span></td>
+          <td class="td-muted">{{ job.discovered_at | fmtdt }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" style="padding:2rem;text-align:center;color:var(--text-2)">No jobs found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card__header">
+    <span class="card__title">Recent Activity</span>
+    <a href="{{ url_for('main.logs') }}" class="btn btn--ghost btn--sm">View all</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Level</th>
+          <th>Module</th>
+          <th>Message</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in recent_logs %}
+        <tr>
+          <td><span class="badge badge--{{ log.level | lower }}">{{ log.level }}</span></td>
+          <td><span class="log-module">{{ log.module }}</span></td>
+          <td><span class="log-msg">{{ log.message }}</span></td>
+          <td><span class="log-time">{{ log.created_at | fmtdt }}</span></td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" style="padding:2rem;text-align:center;color:var(--text-2)">No activity yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

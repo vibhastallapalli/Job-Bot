@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}job-bot{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/css_style.css') }}" />
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav__brand">job<em>-bot</em></span>
+  <div class="nav__links">
+    {% set ep = request.endpoint %}
+    <a href="{{ url_for('main.dashboard') }}"
+       class="nav__link{% if ep == 'main.dashboard' %} active{% endif %}">Dashboard</a>
+    <a href="{{ url_for('main.jobs') }}"
+       class="nav__link{% if ep in ('main.jobs', 'main.job_detail') %} active{% endif %}">Jobs</a>
+    <a href="{{ url_for('main.resume') }}"
+       class="nav__link{% if ep == 'main.resume' %} active{% endif %}">Resume</a>
+    <a href="{{ url_for('main.settings') }}"
+       class="nav__link{% if ep == 'main.settings' %} active{% endif %}">Settings</a>
+    <a href="{{ url_for('main.logs') }}"
+       class="nav__link{% if ep == 'main.logs' %} active{% endif %}">Logs</a>
+  </div>
+</nav>
+
+<div class="content">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flashes">
+      {% for category, message in messages %}
+      <div class="flash flash--{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<script src="{{ url_for('static', filename='js/js_main.js') }}"></script>
+</body>
+</html>

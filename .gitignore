@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+*.db
+output/
+*.pdf
+*.aux
+*.log
+*.out
+*.toc
+.venv/
+venv/
+config.json
+linkedin_state.json
