@@ -230,6 +230,7 @@ tbody tr:hover td { background: rgba(255,255,255,.022); }
 .badge--rejected   { background: var(--c-red-bg);   color: var(--c-red); }
 .badge--ignored    { background: var(--c-gray-bg);  color: var(--text-2); }
 .badge--pending    { background: var(--c-gray-bg);  color: var(--text-2); }
+.badge--queued     { background: rgba(251,191,36,.14); color: var(--c-amber); }
 
 .badge--info    { background: var(--c-blue-bg);  color: var(--c-blue); }
 .badge--warning { background: var(--c-amber-bg); color: var(--c-amber); }

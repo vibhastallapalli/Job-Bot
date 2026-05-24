@@ -10,7 +10,7 @@ from database.database_db import get_db, DB_PATH
 
 main_bp = Blueprint("main", __name__)
 
-_VALID_STATUSES    = {"discovered", "applied", "interview", "offer", "rejected", "ignored"}
+_VALID_STATUSES    = {"discovered", "applied", "interview", "offer", "rejected", "ignored", "queued"}
 _SCRAPE_IN_PROGRESS = False   # guarded by GIL; single scrape at a time
 
 
@@ -55,7 +55,7 @@ def jobs():
         ).fetchall()
 
     counts = {s: db.execute("SELECT COUNT(*) FROM jobs WHERE status=?", (s,)).fetchone()[0]
-              for s in ("discovered", "applied", "interview", "rejected")}
+              for s in ("discovered", "applied", "interview", "rejected", "queued")}
     counts["all"] = db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
 
     return render_template("templates_jobs.html", jobs=job_rows, status=status_filter, counts=counts)
@@ -138,6 +138,51 @@ def scrape_status():
             {"level": r["level"], "message": r["message"], "time": str(r["created_at"])}
             for r in rows
         ],
+    })
+
+
+# ── Queue ──────────────────────────────────────────────────────────────────
+
+@main_bp.route("/jobs/queue", methods=["POST"])
+def queue_jobs():
+    job_ids = request.form.getlist("job_ids")
+    if not job_ids:
+        flash("No jobs selected.", "warning")
+        return redirect(url_for("main.jobs"))
+
+    db = get_db()
+    queued_count = 0
+    for raw_id in job_ids:
+        try:
+            job_id = int(raw_id)
+        except ValueError:
+            continue
+        job = db.execute("SELECT status FROM jobs WHERE id=?", (job_id,)).fetchone()
+        if job and job["status"] not in ("applied", "interview", "offer", "queued"):
+            db.execute(
+                "UPDATE jobs SET status='queued', updated_at=CURRENT_TIMESTAMP WHERE id=?",
+                (job_id,),
+            )
+            queued_count += 1
+
+    db.commit()
+    flash(f"{queued_count} job(s) added to the queue.", "success")
+    return redirect(url_for("main.jobs"))
+
+
+@main_bp.route("/jobs/queue/stats")
+def queue_stats():
+    from datetime import date
+    db = get_db()
+    queued = db.execute("SELECT COUNT(*) FROM jobs WHERE status='queued'").fetchone()[0]
+    today = date.today().isoformat()
+    row = db.execute("SELECT applied FROM daily_stats WHERE date=?", (today,)).fetchone()
+    applied_today = row["applied"] if row else 0
+    return jsonify({
+        "queued": queued,
+        "applied_today": applied_today,
+        "remaining_today": max(0, 12 - applied_today),
+        "cap": 12,
     })
 
 
@@ -261,6 +306,11 @@ def _automate_worker(config: dict, job: dict, resume_path) -> None:
                 "INSERT INTO logs (level, module, message) VALUES ('WARNING', 'automation', ?)",
                 (f"Auto-apply failed for {job['title']} at {job['company']}: {result.error}",),
             )
+            if job.get("status") == "queued":
+                conn.execute(
+                    "UPDATE jobs SET status='discovered', updated_at=CURRENT_TIMESTAMP WHERE id=?",
+                    (job_id,),
+                )
         conn.commit()
     except Exception as exc:
         conn.execute(

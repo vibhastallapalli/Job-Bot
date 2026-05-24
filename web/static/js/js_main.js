@@ -64,3 +64,74 @@ document.querySelectorAll('.flash').forEach(function (el) {
   poll();
   timer = setInterval(poll, 2000);
 })();
+
+// ── Queue selection ───────────────────────────────────────────────────────
+(function () {
+  var form     = document.getElementById('queue-form');
+  var btn      = document.getElementById('queue-btn');
+  var countSpan = document.getElementById('queue-count');
+  var checkAll = document.getElementById('check-all');
+  if (!form) return;
+
+  function getChecked() {
+    return Array.from(document.querySelectorAll('.job-check:checked'));
+  }
+
+  function updateBtn() {
+    var n = getChecked().length;
+    if (countSpan) countSpan.textContent = n;
+    if (btn) btn.disabled = n === 0;
+  }
+
+  document.querySelectorAll('.job-check').forEach(function (cb) {
+    cb.addEventListener('change', function () {
+      if (checkAll && !this.checked) checkAll.checked = false;
+      updateBtn();
+    });
+  });
+
+  if (checkAll) {
+    checkAll.addEventListener('change', function () {
+      document.querySelectorAll('.job-check').forEach(function (cb) {
+        cb.checked = checkAll.checked;
+      });
+      updateBtn();
+    });
+  }
+
+  form.addEventListener('submit', function (e) {
+    var checked = getChecked();
+    if (checked.length === 0) { e.preventDefault(); return; }
+    form.querySelectorAll('input[name="job_ids"]').forEach(function (el) { el.remove(); });
+    checked.forEach(function (cb) {
+      var inp = document.createElement('input');
+      inp.type = 'hidden';
+      inp.name = 'job_ids';
+      inp.value = cb.value;
+      form.appendChild(inp);
+    });
+  });
+})();
+
+// ── Queue status bar ──────────────────────────────────────────────────────
+(function () {
+  var bar = document.getElementById('queue-status-bar');
+  if (!bar) return;
+
+  function poll() {
+    fetch('/jobs/queue/stats')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var q = document.getElementById('qs-queued');
+        var a = document.getElementById('qs-applied');
+        var r = document.getElementById('qs-remaining');
+        if (q) q.textContent = data.queued;
+        if (a) a.textContent = data.applied_today;
+        if (r) r.textContent = data.remaining_today;
+      })
+      .catch(function () {});
+  }
+
+  poll();
+  setInterval(poll, 10000);
+})();

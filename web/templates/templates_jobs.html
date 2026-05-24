@@ -7,6 +7,13 @@
   <p class="page-subtitle">All discovered opportunities</p>
 </div>
 
+{# Queue status bar #}
+<div id="queue-status-bar" style="display:flex;align-items:center;gap:1.5rem;padding:.6rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:1rem;font-size:.82rem;color:var(--text-2)">
+  <span>Queued: <strong id="qs-queued" style="color:var(--c-amber)">—</strong></span>
+  <span>Applied today: <strong id="qs-applied" style="color:var(--text)">—</strong> / 12</span>
+  <span>Remaining today: <strong id="qs-remaining" style="color:var(--c-green)">—</strong></span>
+</div>
+
 <div class="actions-row">
   <div class="filter-tabs">
     <a href="{{ url_for('main.jobs') }}?status=all"
@@ -16,6 +23,10 @@
     <a href="{{ url_for('main.jobs') }}?status=discovered"
        class="filter-tab{% if status == 'discovered' %} active{% endif %}">
       Discovered <span class="filter-tab__count">{{ counts.discovered }}</span>
+    </a>
+    <a href="{{ url_for('main.jobs') }}?status=queued"
+       class="filter-tab{% if status == 'queued' %} active{% endif %}">
+      Queued <span class="filter-tab__count">{{ counts.queued }}</span>
     </a>
     <a href="{{ url_for('main.jobs') }}?status=applied"
        class="filter-tab{% if status == 'applied' %} active{% endif %}">
@@ -30,10 +41,17 @@
       Rejected <span class="filter-tab__count">{{ counts.rejected }}</span>
     </a>
   </div>
-  <form method="POST" action="{{ url_for('main.scrape_jobs') }}" class="inline-form"
-        onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').textContent='Starting…'">
-    <button class="btn btn--primary btn--sm" type="submit">Scrape new jobs</button>
-  </form>
+  <div style="display:flex;gap:.5rem;align-items:center">
+    <form method="POST" action="{{ url_for('main.queue_jobs') }}" id="queue-form">
+      <button class="btn btn--accent btn--sm" type="submit" id="queue-btn" disabled>
+        Queue selected (<span id="queue-count">0</span>)
+      </button>
+    </form>
+    <form method="POST" action="{{ url_for('main.scrape_jobs') }}" class="inline-form"
+          onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').textContent='Starting…'">
+      <button class="btn btn--primary btn--sm" type="submit">Scrape new jobs</button>
+    </form>
+  </div>
 </div>
 
 {# Live scrape progress panel — shown/hidden by main.js polling /jobs/scrape/status #}
@@ -51,6 +69,7 @@
     <table>
       <thead>
         <tr>
+          <th style="width:2rem"><input type="checkbox" id="check-all" style="cursor:pointer"></th>
           <th>Title</th>
           <th>Company</th>
           <th>Location</th>
@@ -63,6 +82,7 @@
       <tbody>
         {% for job in jobs %}
         <tr>
+          <td><input type="checkbox" class="job-check" value="{{ job.id }}" style="cursor:pointer"></td>
           <td><a class="job-link" href="{{ url_for('main.job_detail', job_id=job.id) }}">{{ job.title }}</a></td>
           <td style="font-weight:500">{{ job.company }}</td>
           <td class="td-muted">{{ job.location }}</td>
@@ -76,7 +96,7 @@
         </tr>
         {% else %}
         <tr>
-          <td colspan="7">
+          <td colspan="8">
             <div class="empty-state">
               <div class="empty-state__title">No jobs found</div>
               <div class="empty-state__desc">

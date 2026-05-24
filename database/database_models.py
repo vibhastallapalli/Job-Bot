@@ -45,4 +45,9 @@ CREATE TABLE IF NOT EXISTS logs (
     message    TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS daily_stats (
+    date    TEXT    PRIMARY KEY,
+    applied INTEGER DEFAULT 0
+);
 """
