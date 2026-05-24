@@ -366,6 +366,21 @@ def settings():
     return render_template("templates_settings.html", config=load_config())
 
 
+# ── Applications history ───────────────────────────────────────────────────
+
+@main_bp.route("/applications")
+def applications():
+    db = get_db()
+    rows = db.execute("""
+        SELECT a.id, a.submitted_at, a.notes, a.outcome,
+               j.title, j.company, j.url, j.id AS job_id
+        FROM applications a
+        JOIN jobs j ON j.id = a.job_id
+        ORDER BY a.submitted_at DESC
+    """).fetchall()
+    return render_template("templates_applications.html", applications=rows)
+
+
 # ── Logs ───────────────────────────────────────────────────────────────────
 
 @main_bp.route("/logs")

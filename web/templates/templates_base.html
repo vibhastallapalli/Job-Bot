@@ -18,6 +18,8 @@
        class="nav__link{% if ep in ('main.jobs', 'main.job_detail') %} active{% endif %}">Jobs</a>
     <a href="{{ url_for('main.resume') }}"
        class="nav__link{% if ep == 'main.resume' %} active{% endif %}">Resume</a>
+    <a href="{{ url_for('main.applications') }}"
+       class="nav__link{% if ep == 'main.applications' %} active{% endif %}">Applications</a>
     <a href="{{ url_for('main.settings') }}"
        class="nav__link{% if ep == 'main.settings' %} active{% endif %}">Settings</a>
     <a href="{{ url_for('main.logs') }}"

@@ -356,8 +356,15 @@ class ApplicationBot:
                 return step_num + 1, "submit clicked but confirmation unclear"
 
             # Fill fields on this step BEFORE advancing
-            self._fill_current_step(page, resume_path)
+            unanswered = self._fill_current_step(page, resume_path)
             _jitter(0.5, 1)
+
+            if unanswered:
+                label = unanswered[0]
+                _db_log(db_conn, "WARNING", "automation",
+                        f"Abandoned: required field has no configured answer — '{label}'")
+                self._discard_modal(page)
+                return step_num, f"abandoned: unanswered required question: {label}"
 
             # Check for validation errors after fill
             errors = self._get_errors(page)
@@ -381,16 +388,18 @@ class ApplicationBot:
 
     # ── Step-level filling ─────────────────────────────────────────────────
 
-    def _fill_current_step(self, page: Page, resume_path: str | None) -> None:
-        """Dispatch to specialized fillers for the current modal step."""
-        # Check if this step has a resume section
+    def _fill_current_step(self, page: Page, resume_path: str | None) -> list[str]:
+        """Dispatch to specialized fillers for the current modal step.
+        Returns labels of required fields that were left unanswered."""
         if self._is_resume_step(page):
             self._handle_resume_section(page, resume_path)
 
-        self._fill_inputs(page)
+        unanswered: list[str] = []
+        unanswered.extend(self._fill_inputs(page))
         self._fill_selects(page)
         self._fill_radios(page)
-        self._fill_textareas(page)
+        unanswered.extend(self._fill_textareas(page))
+        return unanswered
 
     def _is_resume_step(self, page: Page) -> bool:
         try:
@@ -443,9 +452,10 @@ class ApplicationBot:
         except Exception:
             pass
 
-    def _fill_inputs(self, page: Page) -> None:
-        """Fill text / number / email / tel inputs that are empty or need our value."""
-        input_types = "text', type='number', type='email', type='tel"
+    def _fill_inputs(self, page: Page) -> list[str]:
+        """Fill text / number / email / tel inputs that are empty or need our value.
+        Returns labels of required fields left unanswered."""
+        unanswered: list[str] = []
         selectors   = (
             f"{_MODAL} input[type='text'], {_MODAL} input[type='number'], "
             f"{_MODAL} input[type='email'], {_MODAL} input[type='tel'], "
@@ -454,7 +464,7 @@ class ApplicationBot:
         try:
             inputs = page.query_selector_all(selectors)
         except Exception:
-            return
+            return unanswered
 
         for inp in inputs:
             try:
@@ -463,6 +473,8 @@ class ApplicationBot:
                 label = self._label_for(page, inp)
                 value = self._resolve(label or "", inp.get_attribute("type") or "text")
                 if not value:
+                    if _is_required(inp):
+                        unanswered.append(label or "(unlabelled)")
                     continue
                 current = inp.input_value()
                 if current and current.strip():
@@ -471,6 +483,7 @@ class ApplicationBot:
                 _jitter(0.1, 0.3)
             except Exception:
                 continue
+        return unanswered
 
     def _fill_selects(self, page: Page) -> None:
         """Select the best option in every visible <select> element."""
@@ -534,12 +547,14 @@ class ApplicationBot:
             except Exception:
                 continue
 
-    def _fill_textareas(self, page: Page) -> None:
-        """Fill textarea elements (cover letter, additional info)."""
+    def _fill_textareas(self, page: Page) -> list[str]:
+        """Fill textarea elements (cover letter, additional info).
+        Returns labels of required fields left unanswered."""
+        unanswered: list[str] = []
         try:
             textareas = page.query_selector_all(f"{_MODAL} textarea")
         except Exception:
-            return
+            return unanswered
 
         for ta in textareas:
             try:
@@ -549,11 +564,15 @@ class ApplicationBot:
                     continue
                 label = self._label_for(page, ta)
                 value = self._resolve(label or "", "textarea")
-                if value:
-                    ta.fill(value)
-                    _jitter(0.2, 0.5)
+                if not value:
+                    if _is_required(ta):
+                        unanswered.append(label or "(unlabelled)")
+                    continue
+                ta.fill(value)
+                _jitter(0.2, 0.5)
             except Exception:
                 continue
+        return unanswered
 
     # ── Field value resolution ─────────────────────────────────────────────
 
@@ -905,6 +924,28 @@ class ApplicationBot:
             except Exception:
                 pass
 
+    def _discard_modal(self, page: Page) -> None:
+        """Close the Easy Apply modal cleanly by discarding the in-progress application.
+        Clicks the modal X button, then confirms 'Discard' in the dialog LinkedIn shows."""
+        # Step 1: click the modal close/X button to trigger the discard confirmation
+        for aria in ["Dismiss", "Close"]:
+            try:
+                btn = page.get_by_role("button", name=aria, exact=False)
+                if btn.count() > 0 and btn.first.is_visible():
+                    btn.first.click()
+                    _jitter(0.5, 1.0)
+                    break
+            except Exception:
+                pass
+        # Step 2: confirm discard in the dialog LinkedIn shows
+        try:
+            btn = page.get_by_role("button", name="Discard", exact=False)
+            if btn.count() > 0 and btn.first.is_visible():
+                btn.first.click()
+                _jitter(0.3, 0.6)
+        except Exception:
+            pass
+
     def _screenshot(self, page: Page, name: str) -> str:
         """Save a screenshot and return its path."""
         ts   = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -918,6 +959,18 @@ class ApplicationBot:
 
 
 # ── Module-level helpers ───────────────────────────────────────────────────
+
+def _is_required(el) -> bool:
+    """Return True if the element carries required or aria-required=true."""
+    try:
+        if el.get_attribute("required") is not None:
+            return True
+        if (el.get_attribute("aria-required") or "").lower() == "true":
+            return True
+    except Exception:
+        pass
+    return False
+
 
 def _jitter(min_s: float = 0.4, max_s: float = 1.2) -> None:
     time.sleep(random.uniform(min_s, max_s))
