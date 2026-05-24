@@ -323,6 +323,39 @@
     </div>
   </div>
 
+  {# ── AI form filling ─────────────────────────────────────────────────── #}
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card__header"><span class="card__title">AI Form Filling</span>
+      <span style="font-size:.76rem;font-weight:400;color:var(--text-2)">
+        Uses Claude to answer required questions your config doesn't cover
+      </span>
+    </div>
+    <div style="padding:1.25rem 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="form-group" style="margin:0;grid-column:1/-1">
+        <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;font-size:.875rem">
+          <input type="checkbox" name="ai_enabled"
+                 {% if config.ai is defined and config.ai.enabled %}checked{% endif %}
+                 style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer" />
+          Enable AI form filling
+        </label>
+        <div style="font-size:.76rem;color:var(--text-2);margin-top:.35rem;margin-left:1.6rem">
+          When enabled, any required field your config can't answer is sent to Claude instead of abandoning the application.
+        </div>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Anthropic API key</label>
+        <input class="form-input" type="password" name="ai_api_key"
+               placeholder="Leave blank to keep existing"
+               autocomplete="new-password" />
+      </div>
+      <div class="form-group" style="margin:0;grid-column:1/-1">
+        <label class="form-label">Bio <span style="font-weight:400;text-transform:none">(Claude uses this as source material when answering questions)</span></label>
+        <textarea class="form-input" name="applicant_bio" rows="4" style="resize:vertical"
+                  placeholder="Your background, skills, and experience in a short paragraph…">{{ config.applicant.bio if (config.applicant is defined and config.applicant.bio is defined) else '' }}</textarea>
+      </div>
+    </div>
+  </div>
+
   <button class="btn btn--primary" type="submit">Save settings</button>
 
 </form>

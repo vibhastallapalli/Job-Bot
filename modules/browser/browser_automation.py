@@ -141,6 +141,7 @@ class ApplicationBot:
         title   = job.get("title",   "Unknown")
         company = job.get("company", "Unknown")
         result  = ApplyResult(success=False, job_id=job_id, notes="")
+        self._current_job = dict(job)
 
         with sync_playwright() as pw:
             browser = pw.chromium.launch(
@@ -474,7 +475,15 @@ class ApplicationBot:
                 value = self._resolve(label or "", inp.get_attribute("type") or "text")
                 if not value:
                     if _is_required(inp):
-                        unanswered.append(label or "(unlabelled)")
+                        ai_val = _try_ai_answer(
+                            label or "", inp.get_attribute("type") or "text",
+                            None, self._config, getattr(self, "_current_job", {}),
+                        )
+                        if ai_val:
+                            inp.fill(ai_val)
+                            _jitter(0.1, 0.3)
+                        else:
+                            unanswered.append(label or "(unlabelled)")
                     continue
                 current = inp.input_value()
                 if current and current.strip():
@@ -566,7 +575,15 @@ class ApplicationBot:
                 value = self._resolve(label or "", "textarea")
                 if not value:
                     if _is_required(ta):
-                        unanswered.append(label or "(unlabelled)")
+                        ai_val = _try_ai_answer(
+                            label or "", "textarea",
+                            None, self._config, getattr(self, "_current_job", {}),
+                        )
+                        if ai_val:
+                            ta.fill(ai_val)
+                            _jitter(0.2, 0.5)
+                        else:
+                            unanswered.append(label or "(unlabelled)")
                     continue
                 ta.fill(value)
                 _jitter(0.2, 0.5)
@@ -970,6 +987,27 @@ def _is_required(el) -> bool:
     except Exception:
         pass
     return False
+
+
+def _ai_enabled(config: dict) -> bool:
+    ai = config.get("ai", {})
+    return bool(ai.get("enabled")) and bool((ai.get("anthropic_api_key") or "").strip())
+
+
+def _try_ai_answer(
+    label: str,
+    field_type: str,
+    options: list[str] | None,
+    config: dict,
+    job: dict,
+) -> str:
+    if not _ai_enabled(config):
+        return ""
+    try:
+        from modules.ai.ai_form_filler import answer_question
+        return answer_question(label, field_type, options, config, job)
+    except Exception:
+        return ""
 
 
 def _jitter(min_s: float = 0.4, max_s: float = 1.2) -> None:

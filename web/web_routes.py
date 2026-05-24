@@ -302,6 +302,13 @@ def settings():
         cfg.setdefault("microsoft", {})
         cfg.setdefault("browser", {})
         cfg.setdefault("answers", {})
+        cfg.setdefault("ai", {})
+
+        # AI
+        cfg["ai"]["enabled"] = "ai_enabled" in request.form
+        ai_key = request.form.get("ai_api_key", "").strip()
+        if ai_key:
+            cfg["ai"]["anthropic_api_key"] = ai_key
 
         # Applicant info
         cfg["applicant"]["name"]     = request.form.get("applicant_name", "").strip()
@@ -312,6 +319,7 @@ def settings():
         cfg["applicant"]["city"]     = request.form.get("applicant_city", "").strip()
         cfg["applicant"]["state"]    = request.form.get("applicant_state", "").strip()
         cfg["applicant"]["country"]  = request.form.get("applicant_country", "United States").strip()
+        cfg["applicant"]["bio"]      = request.form.get("applicant_bio", "").strip()
 
         # Job search
         raw_kw  = request.form.get("keywords", "")
