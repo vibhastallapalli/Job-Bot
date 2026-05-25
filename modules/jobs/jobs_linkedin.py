@@ -161,9 +161,8 @@ class LinkedInScraper:
         self.applicant_filter = li.get("applicant_filter", "no_filter")
         self.date_posted     = li.get("date_posted", "past_week")
 
-        self.job_types    = js.get("job_types", [])    # e.g. ["Co-op", "Internship"]
-        self.term_lengths = js.get("term_lengths", []) # e.g. ["4-month", "8-month"]
-        self.work_types   = js.get("work_types", [])   # e.g. ["Remote", "Hybrid"]
+        self.job_types  = js.get("job_types", [])  # e.g. ["Co-op", "Internship"]
+        self.work_types = js.get("work_types", []) # e.g. ["Remote", "Hybrid"]
 
         # State file at project root (next to config.json)
         _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -249,34 +248,27 @@ class LinkedInScraper:
     def _build_search_queries(self, keywords: list[str]) -> list[str]:
         """
         Expand each keyword into one or more search strings by appending
-        job_type and term_length tokens.  Applicant count filtering happens
-        after scraping (post-filter on the scraped applicant_count field).
+        job_type tokens.  Applicant count filtering happens after scraping
+        (post-filter on the scraped applicant_count field).
 
         If a keyword already contains a job-type token (e.g. keyword is
         "mechanical engineering coop" and job_types includes "Co-op"), that
         token is NOT appended again — prevents "mechanical engineering coop coop".
 
         Example — keyword without embedded type:
-          keywords=["mechanical engineering"], job_types=["Co-op","Internship"],
-          term_lengths=["4-month"]
+          keywords=["mechanical engineer"], job_types=["Co-op","Internship"]
         Returns:
-          ["mechanical engineering coop 4-month",
-           "mechanical engineering internship 4-month"]
+          ["mechanical engineer coop", "mechanical engineer internship"]
 
-        Example — keyword with embedded type (user's current setup):
-          keywords=["mechanical engineering coop"], job_types=["Co-op"],
-          term_lengths=["4-month"]
+        Example — keyword with embedded type:
+          keywords=["mechanical engineering coop"], job_types=["Co-op"]
         Returns:
-          ["mechanical engineering coop 4-month"]
+          ["mechanical engineering coop"]
         """
         type_tokens = (
             [self._JOB_TYPE_TERMS[jt] for jt in self.job_types
              if jt in self._JOB_TYPE_TERMS]
             if self.job_types else []
-        )
-        term_tokens = (
-            [tl for tl in self.term_lengths if tl and tl.lower() != "any"]
-            if self.term_lengths else [""]
         )
 
         seen: set[str] = set()
@@ -291,16 +283,13 @@ class LinkedInScraper:
             applicable_types = [""] if (kw_has_type or not type_tokens) else type_tokens
 
             for jt in applicable_types:
-                for tl in term_tokens:
-                    parts = [kw]
-                    if jt:
-                        parts.append(jt)
-                    if tl:
-                        parts.append(tl)
-                    query = " ".join(parts)
-                    if query not in seen:
-                        seen.add(query)
-                        queries.append(query)
+                parts = [kw]
+                if jt:
+                    parts.append(jt)
+                query = " ".join(parts)
+                if query not in seen:
+                    seen.add(query)
+                    queries.append(query)
 
         return queries or keywords
 

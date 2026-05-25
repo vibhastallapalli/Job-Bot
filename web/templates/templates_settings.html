@@ -207,25 +207,6 @@
       </div>
 
       <div class="form-group" style="margin:0">
-        <label class="form-label">Term Length</label>
-        {% set sel_terms = config.job_search.term_lengths if (config.job_search.term_lengths is defined) else [] %}
-        <div style="display:flex;flex-wrap:wrap;gap:.5rem .75rem;margin-top:.35rem">
-          {% for tl in ['4-month', '8-month', '12-month', 'Any'] %}
-          <label style="display:flex;align-items:center;gap:.4rem;font-size:.875rem;font-weight:400;cursor:pointer">
-            <input type="checkbox" name="term_lengths" value="{{ tl }}"
-                   {% if tl in sel_terms %}checked{% endif %}
-                   style="width:15px;height:15px;accent-color:var(--accent);cursor:pointer" />
-            {{ tl }}
-          </label>
-          {% endfor %}
-        </div>
-        <div style="font-size:.76rem;color:var(--text-2);margin-top:.4rem">
-          Each checked term generates a separate search, e.g. "mechanical engineering coop 4-month".
-          "Any" runs a search with no term suffix.
-        </div>
-      </div>
-
-      <div class="form-group" style="margin:0">
         <label class="form-label">Work Type</label>
         {% set sel_work = config.job_search.work_types if (config.job_search.work_types is defined) else [] %}
         <div style="display:flex;flex-wrap:wrap;gap:.5rem .75rem;margin-top:.35rem">

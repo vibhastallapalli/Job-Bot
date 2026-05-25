@@ -8,12 +8,16 @@
   },
   "job_search": {
     "keywords": [
-      "mechanical engineering coop",
-      "mechanical engineering internship"
+      "mechanical engineer",
+      "mechatronics engineer",
+      "controls engineer",
+      "embedded systems engineer"
     ],
     "locations": [
-      "Canada",
-      "USA"
+      "Toronto, Ontario",
+      "Waterloo, Ontario",
+      "Vancouver, British Columbia",
+      "San Francisco, CA"
     ],
     "sources": [
       "linkedin"
@@ -22,9 +26,6 @@
     "job_types": [
       "Co-op",
       "Internship"
-    ],
-    "term_lengths": [
-      "4-month"
     ],
     "work_types": [
       "Remote",

@@ -379,9 +379,8 @@ def settings():
         cfg["job_search"]["blacklisted_companies"] = [
             c.strip() for c in request.form.get("blacklist", "").split(",") if c.strip()
         ]
-        cfg["job_search"]["job_types"]    = request.form.getlist("job_types")
-        cfg["job_search"]["term_lengths"] = request.form.getlist("term_lengths")
-        cfg["job_search"]["work_types"]   = request.form.getlist("work_types")
+        cfg["job_search"]["job_types"]  = request.form.getlist("job_types")
+        cfg["job_search"]["work_types"] = request.form.getlist("work_types")
 
         # LinkedIn
         cfg["linkedin"]["email"] = request.form.get("li_email", "").strip()
