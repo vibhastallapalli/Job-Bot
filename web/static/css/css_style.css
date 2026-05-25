@@ -559,6 +559,61 @@ tbody tr:hover td { background: rgba(255,255,255,.022); }
 /* ─── Inline form ────────────────────────────────────────────────────────── */
 .inline-form { display: inline; }
 
+/* ─── Skeleton loading ───────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+@keyframes skeleton-out {
+  to { opacity: 0; visibility: collapse; }
+}
+
+@keyframes real-in {
+  from { visibility: visible; opacity: 0; }
+  to   { visibility: visible; opacity: 1; }
+}
+
+.skeleton-tbody {
+  animation: skeleton-out 0.2s ease-out 0.5s forwards;
+}
+
+.real-tbody {
+  visibility: collapse;
+  opacity: 0;
+  animation: real-in 0.2s ease-in 0.5s forwards;
+}
+
+.skeleton-row td {
+  padding: .72rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.skeleton-cell {
+  height: 12px;
+  border-radius: var(--r-xs);
+  background: linear-gradient(
+    90deg,
+    var(--surface-3) 25%,
+    var(--surface-4) 50%,
+    var(--surface-3) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Stagger the shimmer wave row by row */
+.skeleton-row:nth-child(2) .skeleton-cell { animation-delay: .1s; }
+.skeleton-row:nth-child(3) .skeleton-cell { animation-delay: .2s; }
+.skeleton-row:nth-child(4) .skeleton-cell { animation-delay: .3s; }
+.skeleton-row:nth-child(5) .skeleton-cell { animation-delay: .4s; }
+.skeleton-row:nth-child(6) .skeleton-cell { animation-delay: .5s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-tbody { display: none; }
+  .real-tbody { visibility: visible !important; opacity: 1 !important; animation: none; }
+}
+
 /* ─── Status badge tooltips ──────────────────────────────────────────────── */
 .badge { position: relative; cursor: default; }
 
