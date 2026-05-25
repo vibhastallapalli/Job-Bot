@@ -31,6 +31,26 @@
   --nav-h: 54px;
 }
 
+/* ─── Light mode overrides ───────────────────────────────────────────────── */
+.light {
+  --bg:        #f2f2f7;
+  --surface:   #ffffff;
+  --surface-2: #ebebf2;
+  --surface-3: #e2e2ec;
+  --surface-4: #d8d8e6;
+  --border:    #dcdce8;
+  --border-2:  #ceceda;
+  --text:      #111118;
+  --text-2:    #55557a;
+  --text-3:    #9090aa;
+
+  --accent-bg: rgba(124, 104, 245, .10);
+  --c-gray-bg: rgba(100, 100, 140, .09);
+}
+
+.light body { color-scheme: light; }
+.light tbody tr:hover td { background: rgba(0, 0, 0, .03); }
+
 /* ─── Reset ──────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -78,6 +98,29 @@ a:hover { color: var(--accent-h); }
 }
 
 .nav__links { display: flex; gap: 2px; flex: 1; }
+
+.nav__theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-2);
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: color .14s, background .14s, border-color .14s;
+  flex-shrink: 0;
+}
+.nav__theme-toggle:hover { color: var(--text); background: var(--surface-3); }
+
+/* Dark mode → sun icon visible, moon hidden */
+.icon-sun  { display: block; }
+.icon-moon { display: none; }
+/* Light mode → moon icon visible, sun hidden */
+.light .icon-sun  { display: none; }
+.light .icon-moon { display: block; }
 
 .nav__link {
   display: flex;

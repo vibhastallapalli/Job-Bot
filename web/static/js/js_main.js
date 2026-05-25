@@ -1,3 +1,13 @@
+// ── Theme toggle ──────────────────────────────────────────────────────────
+(function () {
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    var light = document.documentElement.classList.toggle('light');
+    localStorage.setItem('theme', light ? 'light' : 'dark');
+  });
+})();
+
 // Auto-dismiss flash messages after 5 seconds
 document.querySelectorAll('.flash').forEach(function (el) {
   setTimeout(function () {
