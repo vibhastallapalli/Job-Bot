@@ -1,3 +1,27 @@
+// ── Stat card count-up ───────────────────────────────────────────────────
+(function () {
+  var els = document.querySelectorAll('[data-count]');
+  if (!els.length) return;
+
+  var DURATION = 800;
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  els.forEach(function (el) {
+    var target = parseInt(el.getAttribute('data-count'), 10);
+    if (!target) return;          // leave 0 as-is, nothing to animate
+    el.textContent = '0';
+    var startTs = null;
+
+    requestAnimationFrame(function tick(ts) {
+      if (!startTs) startTs = ts;
+      var pct = Math.min((ts - startTs) / DURATION, 1);
+      el.textContent = Math.round(easeOutCubic(pct) * target);
+      if (pct < 1) requestAnimationFrame(tick);
+    });
+  });
+})();
+
 // ── Theme toggle ──────────────────────────────────────────────────────────
 (function () {
   var btn = document.getElementById('theme-toggle');

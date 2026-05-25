@@ -173,6 +173,13 @@ a:hover { color: var(--accent-h); }
   border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 1.25rem 1.5rem;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  cursor: default;
+}
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .22);
+  border-color: var(--border-2);
 }
 
 .stat-card__value {

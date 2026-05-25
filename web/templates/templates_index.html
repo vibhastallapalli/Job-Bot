@@ -29,19 +29,19 @@
 
 <div class="stats-grid">
   <div class="stat-card">
-    <div class="stat-card__value stat-card__value--accent">{{ stats.total }}</div>
+    <div class="stat-card__value stat-card__value--accent" data-count="{{ stats.total }}">{{ stats.total }}</div>
     <div class="stat-card__label">Jobs discovered</div>
   </div>
   <div class="stat-card">
-    <div class="stat-card__value stat-card__value--amber">{{ stats.applied }}</div>
+    <div class="stat-card__value stat-card__value--amber" data-count="{{ stats.applied }}">{{ stats.applied }}</div>
     <div class="stat-card__label">Applications sent</div>
   </div>
   <div class="stat-card">
-    <div class="stat-card__value stat-card__value--green">{{ stats.interviews }}</div>
+    <div class="stat-card__value stat-card__value--green" data-count="{{ stats.interviews }}">{{ stats.interviews }}</div>
     <div class="stat-card__label">Interviews</div>
   </div>
   <div class="stat-card">
-    <div class="stat-card__value stat-card__value--red">{{ stats.rejected }}</div>
+    <div class="stat-card__value stat-card__value--red" data-count="{{ stats.rejected }}">{{ stats.rejected }}</div>
     <div class="stat-card__label">Rejected</div>
   </div>
 </div>
