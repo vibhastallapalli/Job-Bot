@@ -22,6 +22,11 @@ def create_app():
     app.teardown_appcontext(close_db)
     app.register_blueprint(main_bp)
 
+    @app.errorhandler(404)
+    def page_not_found(e):
+        from flask import render_template
+        return render_template("templates_404.html"), 404
+
     @app.template_filter("fmtdt")
     def fmtdt(s):
         if not s:
