@@ -1,3 +1,28 @@
+// ── Page transition ───────────────────────────────────────────────────────
+(function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var content = document.querySelector('.content');
+  if (!content) return;
+
+  document.addEventListener('click', function (e) {
+    if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+
+    var link = e.target.closest('a[href]');
+    if (!link) return;
+
+    // Skip new-tab targets, external origins, and same-page anchors
+    if (link.target === '_blank') return;
+    try { if (new URL(link.href).origin !== window.location.origin) return; } catch (_) { return; }
+    if (link.pathname === window.location.pathname && link.hash) return;
+
+    e.preventDefault();
+    var dest = link.href;
+    content.classList.add('page-leaving');
+    setTimeout(function () { window.location.href = dest; }, 180);
+  });
+})();
+
 // ── Subtitle typing animation ─────────────────────────────────────────────
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
