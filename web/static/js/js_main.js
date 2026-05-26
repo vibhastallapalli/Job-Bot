@@ -164,13 +164,14 @@
   els.forEach(function (el) {
     var target = parseInt(el.getAttribute('data-count'), 10);
     if (!target) return;          // leave 0 as-is, nothing to animate
-    el.textContent = '0';
+    var suffix = el.textContent.trim().slice(-1) === '%' ? '%' : '';
+    el.textContent = '0' + suffix;
     var startTs = null;
 
     requestAnimationFrame(function tick(ts) {
       if (!startTs) startTs = ts;
       var pct = Math.min((ts - startTs) / DURATION, 1);
-      el.textContent = Math.round(easeOutCubic(pct) * target);
+      el.textContent = Math.round(easeOutCubic(pct) * target) + suffix;
       if (pct < 1) requestAnimationFrame(tick);
     });
   });

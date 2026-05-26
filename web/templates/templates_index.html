@@ -44,6 +44,10 @@
     <div class="stat-card__value stat-card__value--red" data-count="{{ stats.rejected }}">{{ stats.rejected }}</div>
     <div class="stat-card__label">Rejected</div>
   </div>
+  <div class="stat-card">
+    <div class="stat-card__value stat-card__value--green" data-count="{{ stats.success_rate }}">{{ stats.success_rate }}%</div>
+    <div class="stat-card__label">Success rate</div>
+  </div>
 </div>
 
 {% if stats.total == 0 %}

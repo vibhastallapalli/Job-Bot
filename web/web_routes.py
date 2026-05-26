@@ -19,11 +19,15 @@ _SCRAPE_IN_PROGRESS = False   # guarded by GIL; single scrape at a time
 @main_bp.route("/")
 def dashboard():
     db = get_db()
+    applied    = db.execute("SELECT COUNT(*) FROM jobs WHERE status IN ('applied','interview','offer','rejected')").fetchone()[0]
+    interviews = db.execute("SELECT COUNT(*) FROM jobs WHERE status='interview'").fetchone()[0]
+    offers     = db.execute("SELECT COUNT(*) FROM jobs WHERE status='offer'").fetchone()[0]
     stats = {
-        "total":      db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0],
-        "applied":    db.execute("SELECT COUNT(*) FROM jobs WHERE status IN ('applied','interview','offer','rejected')").fetchone()[0],
-        "interviews": db.execute("SELECT COUNT(*) FROM jobs WHERE status='interview'").fetchone()[0],
-        "rejected":   db.execute("SELECT COUNT(*) FROM jobs WHERE status='rejected'").fetchone()[0],
+        "total":        db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0],
+        "applied":      applied,
+        "interviews":   interviews,
+        "rejected":     db.execute("SELECT COUNT(*) FROM jobs WHERE status='rejected'").fetchone()[0],
+        "success_rate": round((interviews + offers) / applied * 100) if applied else 0,
     }
     recent_jobs = db.execute("SELECT * FROM jobs ORDER BY discovered_at DESC LIMIT 8").fetchall()
     recent_logs = db.execute("SELECT * FROM logs ORDER BY created_at DESC LIMIT 6").fetchall()

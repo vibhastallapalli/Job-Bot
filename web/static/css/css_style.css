@@ -214,7 +214,7 @@ a:hover { color: var(--accent-h); }
 /* ─── Stat cards ─────────────────────────────────────────────────────────── */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 1rem;
   margin-bottom: 1.75rem;
 }
@@ -921,7 +921,11 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
 #back-to-top:active { transform: translateY(1px); }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 600px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .content { padding-left: 1rem; padding-right: 1rem; }
 }
