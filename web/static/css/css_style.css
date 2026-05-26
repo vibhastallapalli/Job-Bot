@@ -746,6 +746,38 @@ tbody tr:hover td { background: rgba(255,255,255,.022); }
 .badge--ignored::after    { content: "Manually skipped"; }
 .badge--pending::after    { content: "Awaiting response"; }
 
+/* ─── Back to top ────────────────────────────────────────────────────────── */
+#back-to-top {
+  position: fixed;
+  bottom: 1.75rem;
+  right: 1.75rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .2s ease, transform .2s ease, background .14s ease;
+  pointer-events: none;
+  z-index: 200;
+  box-shadow: 0 4px 14px rgba(124, 104, 245, .35);
+}
+
+#back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+#back-to-top:hover  { background: var(--accent-h); }
+#back-to-top:active { transform: translateY(1px); }
+
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 700px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }

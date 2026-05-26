@@ -1,3 +1,18 @@
+// ── Back to top ───────────────────────────────────────────────────────────
+(function () {
+  var btn = document.getElementById('back-to-top');
+  if (!btn) return;
+
+  window.addEventListener('scroll', function () {
+    btn.classList.toggle('visible', window.scrollY > 300);
+  }, { passive: true });
+
+  btn.addEventListener('click', function () {
+    var behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+    window.scrollTo({ top: 0, behavior: behavior });
+  });
+})();
+
 // ── Page transition ───────────────────────────────────────────────────────
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
