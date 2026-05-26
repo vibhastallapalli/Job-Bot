@@ -676,6 +676,44 @@ tbody tr:hover td { background: rgba(255,255,255,.022); }
 .source-badge--greenhouse { background: var(--c-green-bg);   color: var(--c-green); }
 .source-badge--wellfound  { background: var(--c-amber-bg);   color: var(--c-amber); }
 
+/* ─── Live filter search bar ─────────────────────────────────────────────── */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  padding: 0 .85rem;
+  margin-bottom: 1rem;
+  transition: border-color .14s;
+}
+
+.search-bar:focus-within { border-color: var(--accent); }
+
+.search-bar__icon { color: var(--text-3); flex-shrink: 0; }
+
+.search-bar__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: .875rem;
+  font-family: inherit;
+  padding: .6rem 0;
+}
+
+.search-bar__input::placeholder { color: var(--text-3); }
+.search-bar__input::-webkit-search-cancel-button { cursor: pointer; opacity: .5; }
+
+.search-bar__count {
+  font-size: .75rem;
+  color: var(--text-3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* ─── Log entry ──────────────────────────────────────────────────────────── */
 .log-msg    { color: var(--text); max-width: 520px; }
 .log-time   { color: var(--text-3); font-size: .78rem; font-family: 'Consolas', monospace; white-space: nowrap; }

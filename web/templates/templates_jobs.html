@@ -54,6 +54,14 @@
   </div>
 </div>
 
+<div class="search-bar">
+  <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+  </svg>
+  <input id="job-filter" class="search-bar__input" type="search" placeholder="Filter by title or company…" autocomplete="off" spellcheck="false">
+  <span id="job-filter-count" class="search-bar__count"></span>
+</div>
+
 {# Live scrape progress panel — shown/hidden by main.js polling /jobs/scrape/status #}
 <div id="scrape-live-panel" style="display:none;margin-bottom:1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
   <div style="display:flex;align-items:center;gap:.6rem;padding:.65rem 1rem;background:var(--surface-2);border-bottom:1px solid var(--border)">
@@ -148,6 +156,11 @@
           </td>
         </tr>
         {% endfor %}
+        <tr id="filter-empty-row" style="display:none">
+          <td colspan="8" style="padding:2rem;text-align:center;color:var(--text-2);font-size:.875rem">
+            No jobs match your search.
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>

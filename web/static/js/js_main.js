@@ -3,34 +3,48 @@
   var tbody = document.querySelector('.real-tbody');
   if (!tbody) return;
 
-  // Only rows that have job data (skip the empty-state row)
-  var rows = Array.from(tbody.querySelectorAll('tr')).filter(function (r) {
-    return r.querySelector('.job-check');
-  });
-  if (!rows.length) return;
-
   var cur  = -1;
   var hint = document.querySelector('.shortcut-bar__hint');
 
+  // Recomputed on every action so hidden (filtered) rows are skipped
+  function visibleRows() {
+    return Array.from(tbody.querySelectorAll('tr')).filter(function (r) {
+      return r.querySelector('.job-check') && r.style.display !== 'none';
+    });
+  }
+
+  if (!visibleRows().length) return;
+
+  function deactivate() {
+    var active = tbody.querySelector('.row--active');
+    if (active) active.classList.remove('row--active');
+    cur = -1;
+  }
+
   function activate(idx) {
+    var rows = visibleRows();
+    if (!rows.length) return;
     idx = Math.max(0, Math.min(idx, rows.length - 1));
-    if (cur >= 0) rows[cur].classList.remove('row--active');
+    deactivate();
     cur = idx;
     rows[cur].classList.add('row--active');
     rows[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     if (hint) hint.classList.remove('visible');
   }
 
-  // Clicking a non-interactive part of a row activates it
-  rows.forEach(function (r, i) {
-    r.addEventListener('click', function (e) {
-      if (e.target.closest('a, button, input')) return;
-      activate(i);
-    });
+  // Event delegation — works even as rows appear/disappear during filtering
+  tbody.addEventListener('click', function (e) {
+    if (e.target.closest('a, button, input')) return;
+    var row = e.target.closest('tr');
+    if (!row) return;
+    var rows = visibleRows();
+    var i = rows.indexOf(row);
+    if (i >= 0) activate(i);
   });
 
   document.addEventListener('keydown', function (e) {
     if (/^(INPUT|TEXTAREA|SELECT)$/i.test((document.activeElement || {}).tagName || '')) return;
+    var rows = visibleRows();
 
     switch (e.key) {
       case 'j':
@@ -40,33 +54,26 @@
 
       case 'k':
         e.preventDefault();
-        if (cur < 0) { activate(0); break; }
-        if (cur > 0) activate(cur - 1);
+        activate(cur < 0 ? 0 : cur - 1);
         break;
 
       case 'Enter':
-        if (cur < 0) {
-          if (hint) hint.classList.add('visible');
-          return;
-        }
+        if (cur < 0 || !rows[cur]) { if (hint) hint.classList.add('visible'); return; }
         var link = rows[cur].querySelector('.job-link');
         if (link) window.location.href = link.href;
         break;
 
       case 'q':
-        if (cur < 0) {
-          if (hint) hint.classList.add('visible');
-          return;
-        }
+        if (cur < 0 || !rows[cur]) { if (hint) hint.classList.add('visible'); return; }
         e.preventDefault();
         var cb = rows[cur].querySelector('.job-check');
         if (!cb) return;
-        var f   = document.createElement('form');
+        var f    = document.createElement('form');
         f.method = 'POST';
         f.action = '/jobs/queue';
         var inp  = document.createElement('input');
-        inp.type = 'hidden';
-        inp.name = 'job_ids';
+        inp.type  = 'hidden';
+        inp.name  = 'job_ids';
         inp.value = cb.value;
         f.appendChild(inp);
         document.body.appendChild(f);
@@ -74,6 +81,42 @@
         break;
     }
   });
+
+  // Reset active row when the filter changes so navigation restarts cleanly
+  var filterInput = document.getElementById('job-filter');
+  if (filterInput) filterInput.addEventListener('input', deactivate);
+})();
+
+// ── Live job filter ───────────────────────────────────────────────────────
+(function () {
+  var input    = document.getElementById('job-filter');
+  var countEl  = document.getElementById('job-filter-count');
+  var emptyRow = document.getElementById('filter-empty-row');
+  var tbody    = document.querySelector('.real-tbody');
+  if (!input || !tbody) return;
+
+  var allRows = Array.from(tbody.querySelectorAll('tr')).filter(function (r) {
+    return r.querySelector('.job-check');
+  });
+  if (!allRows.length) return;
+
+  function filter() {
+    var q = input.value.trim().toLowerCase();
+    var visible = 0;
+
+    allRows.forEach(function (row) {
+      var title   = (row.querySelector('.job-link') || {}).textContent || '';
+      var company = (row.cells[2]                   || {}).textContent || '';
+      var show    = !q || title.toLowerCase().includes(q) || company.toLowerCase().includes(q);
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    if (countEl)  countEl.textContent    = q ? visible + ' of ' + allRows.length : '';
+    if (emptyRow) emptyRow.style.display = (q && visible === 0) ? '' : 'none';
+  }
+
+  input.addEventListener('input', filter);
 })();
 
 // ── Back to top ───────────────────────────────────────────────────────────
