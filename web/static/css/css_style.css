@@ -654,6 +654,28 @@ tbody tr:hover td { background: rgba(255,255,255,.022); }
 .job-link { color: var(--text); font-weight: 500; }
 .job-link:hover { color: var(--accent-h); }
 
+/* ─── Source badge (inline next to job title) ────────────────────────────── */
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: .1rem .38rem;
+  border-radius: var(--r-xs);
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  margin-left: .45rem;
+  white-space: nowrap;
+  background: var(--c-gray-bg);
+  color: var(--text-2);
+}
+
+.source-badge--linkedin   { background: var(--accent-bg);    color: var(--accent);  }
+.source-badge--indeed     { background: var(--c-blue-bg);    color: var(--c-blue);  }
+.source-badge--greenhouse { background: var(--c-green-bg);   color: var(--c-green); }
+.source-badge--wellfound  { background: var(--c-amber-bg);   color: var(--c-amber); }
+
 /* ─── Log entry ──────────────────────────────────────────────────────────── */
 .log-msg    { color: var(--text); max-width: 520px; }
 .log-time   { color: var(--text-3); font-size: .78rem; font-family: 'Consolas', monospace; white-space: nowrap; }

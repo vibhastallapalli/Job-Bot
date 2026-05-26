@@ -97,7 +97,10 @@
         {% for job in jobs %}
         <tr>
           <td><input type="checkbox" class="job-check" value="{{ job.id }}" style="cursor:pointer"></td>
-          <td><a class="job-link" href="{{ url_for('main.job_detail', job_id=job.id) }}">{{ job.title }}</a></td>
+          <td>
+            <a class="job-link" href="{{ url_for('main.job_detail', job_id=job.id) }}">{{ job.title }}</a>
+            <span class="source-badge source-badge--{{ job.source | lower }}">{{ job.source | capitalize }}</span>
+          </td>
           <td style="font-weight:500">{{ job.company }}</td>
           <td class="td-muted">{{ job.location }}</td>
           <td><span class="source-tag">{{ job.source }}</span></td>
