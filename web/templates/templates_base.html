@@ -37,17 +37,18 @@
   </button>
 </nav>
 
-<div class="content">
+<div id="toast-container">
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    <div class="flashes">
-      {% for category, message in messages %}
-      <div class="flash flash--{{ category }}">{{ message }}</div>
-      {% endfor %}
+    {% for category, message in messages %}
+    <div class="toast toast--{{ category }}" role="alert" aria-live="polite">
+      <span class="toast__msg">{{ message }}</span>
+      <button class="toast__close" aria-label="Dismiss">&#10005;</button>
     </div>
-    {% endif %}
+    {% endfor %}
   {% endwith %}
+</div>
 
+<div class="content">
   {% block content %}{% endblock %}
 </div>
 

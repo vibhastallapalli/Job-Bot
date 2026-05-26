@@ -186,14 +186,20 @@
   });
 })();
 
-// Auto-dismiss flash messages after 5 seconds
-document.querySelectorAll('.flash').forEach(function (el) {
-  setTimeout(function () {
-    el.style.transition = 'opacity 0.5s';
-    el.style.opacity = '0';
-    setTimeout(function () { el.remove(); }, 500);
-  }, 5000);
-});
+// ── Toast notifications ───────────────────────────────────────────────────
+(function () {
+  function dismiss(toast) {
+    if (toast.classList.contains('dismissing')) return;
+    toast.classList.add('dismissing');
+    toast.addEventListener('animationend', function () { toast.remove(); }, { once: true });
+  }
+
+  document.querySelectorAll('.toast').forEach(function (toast) {
+    var timer = setTimeout(function () { dismiss(toast); }, 3000);
+    var btn = toast.querySelector('.toast__close');
+    if (btn) btn.addEventListener('click', function () { clearTimeout(timer); dismiss(toast); });
+  });
+})();
 
 // ── Scrape live-log panel ─────────────────────────────────────────────────
 // Runs only on pages that have the #scrape-live-panel element (jobs page).
