@@ -24,7 +24,7 @@
           <td><span class="badge badge--{{ log.level | lower }}">{{ log.level }}</span></td>
           <td><span class="log-module">{{ log.module }}</span></td>
           <td><span class="log-msg">{{ log.message }}</span></td>
-          <td><span class="log-time">{{ log.created_at | fmtdt }}</span></td>
+          <td><span class="log-time" data-ts="{{ log.created_at }}">{{ log.created_at | fmtdt }}</span></td>
         </tr>
         {% else %}
         <tr>

@@ -330,3 +330,38 @@
   poll();
   setInterval(poll, 10000);
 })();
+
+// ── Relative timestamps ───────────────────────────────────────────────────
+(function () {
+  var els = document.querySelectorAll('.log-time[data-ts]');
+  if (!els.length) return;
+
+  function relTime(raw) {
+    // SQLite timestamps use a space separator; replace to get a valid ISO string
+    var ms   = Date.now() - new Date(raw.replace(' ', 'T')).getTime();
+    var sec  = Math.round(ms / 1000);
+    if (sec < 5)   return 'just now';
+    if (sec < 60)  return sec + 's ago';
+    var min  = Math.round(sec / 60);
+    if (min < 60)  return min + 'm ago';
+    var hr   = Math.round(min / 60);
+    if (hr  < 24)  return hr  + 'h ago';
+    var day  = Math.round(hr  / 24);
+    if (day < 30)  return day + 'd ago';
+    var mo   = Math.round(day / 30);
+    if (mo  < 12)  return mo  + 'mo ago';
+    return Math.round(mo / 12) + 'y ago';
+  }
+
+  function update() {
+    els.forEach(function (el) {
+      var raw = el.getAttribute('data-ts');
+      if (!raw) return;
+      if (!el.title) el.title = el.textContent.trim(); // set absolute time as tooltip once
+      el.textContent = relTime(raw);
+    });
+  }
+
+  update();
+  setInterval(update, 30000);
+})();
