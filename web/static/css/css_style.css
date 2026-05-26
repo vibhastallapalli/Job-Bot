@@ -169,17 +169,50 @@ a:hover { color: var(--accent-h); }
 }
 
 .stat-card {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 1.25rem 1.5rem;
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .2s ease;
   cursor: default;
+  z-index: 0;
 }
+
+/* Gradient border layer — sits 2 px outside the card, behind its background */
+.stat-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: calc(var(--r) + 2px);
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    var(--c-green),
+    var(--c-amber),
+    var(--c-blue),
+    var(--accent)
+  );
+  background-size: 300% 300%;
+  opacity: 0;
+  transition: opacity .25s ease;
+  z-index: -1;
+}
+
+@keyframes stat-gradient-shift {
+  0%   { background-position:   0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
+
 .stat-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 28px rgba(0, 0, 0, .22);
-  border-color: var(--border-2);
+  border-color: transparent;
+}
+.stat-card:hover::before {
+  opacity: 1;
+  animation: stat-gradient-shift 2.5s ease infinite;
 }
 
 .stat-card__value {
