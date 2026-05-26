@@ -1,3 +1,81 @@
+// ── Jobs keyboard navigation ─────────────────────────────────────────────
+(function () {
+  var tbody = document.querySelector('.real-tbody');
+  if (!tbody) return;
+
+  // Only rows that have job data (skip the empty-state row)
+  var rows = Array.from(tbody.querySelectorAll('tr')).filter(function (r) {
+    return r.querySelector('.job-check');
+  });
+  if (!rows.length) return;
+
+  var cur  = -1;
+  var hint = document.querySelector('.shortcut-bar__hint');
+
+  function activate(idx) {
+    idx = Math.max(0, Math.min(idx, rows.length - 1));
+    if (cur >= 0) rows[cur].classList.remove('row--active');
+    cur = idx;
+    rows[cur].classList.add('row--active');
+    rows[cur].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    if (hint) hint.classList.remove('visible');
+  }
+
+  // Clicking a non-interactive part of a row activates it
+  rows.forEach(function (r, i) {
+    r.addEventListener('click', function (e) {
+      if (e.target.closest('a, button, input')) return;
+      activate(i);
+    });
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (/^(INPUT|TEXTAREA|SELECT)$/i.test((document.activeElement || {}).tagName || '')) return;
+
+    switch (e.key) {
+      case 'j':
+        e.preventDefault();
+        activate(cur < 0 ? 0 : cur + 1);
+        break;
+
+      case 'k':
+        e.preventDefault();
+        if (cur < 0) { activate(0); break; }
+        if (cur > 0) activate(cur - 1);
+        break;
+
+      case 'Enter':
+        if (cur < 0) {
+          if (hint) hint.classList.add('visible');
+          return;
+        }
+        var link = rows[cur].querySelector('.job-link');
+        if (link) window.location.href = link.href;
+        break;
+
+      case 'q':
+        if (cur < 0) {
+          if (hint) hint.classList.add('visible');
+          return;
+        }
+        e.preventDefault();
+        var cb = rows[cur].querySelector('.job-check');
+        if (!cb) return;
+        var f   = document.createElement('form');
+        f.method = 'POST';
+        f.action = '/jobs/queue';
+        var inp  = document.createElement('input');
+        inp.type = 'hidden';
+        inp.name = 'job_ids';
+        inp.value = cb.value;
+        f.appendChild(inp);
+        document.body.appendChild(f);
+        f.submit();
+        break;
+    }
+  });
+})();
+
 // ── Back to top ───────────────────────────────────────────────────────────
 (function () {
   var btn = document.getElementById('back-to-top');

@@ -761,6 +761,58 @@ tbody tr:hover td { background: rgba(255,255,255,.022); }
 .badge--ignored::after    { content: "Manually skipped"; }
 .badge--pending::after    { content: "Awaiting response"; }
 
+/* ─── Jobs keyboard navigation ───────────────────────────────────────────── */
+.row--active td { background: var(--accent-bg); }
+.row--active td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
+
+/* ─── Shortcut hint bar ──────────────────────────────────────────────────── */
+.shortcut-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2.25rem;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1.75rem;
+  font-size: .72rem;
+  color: var(--text-3);
+  z-index: 99;
+}
+
+.shortcut-bar kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-3);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-xs);
+  padding: .05rem .38rem;
+  font-size: .69rem;
+  font-family: inherit;
+  color: var(--text-2);
+  min-width: 1.4rem;
+  line-height: 1.65;
+}
+
+.shortcut-bar__hint {
+  margin-left: auto;
+  font-style: italic;
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.shortcut-bar__hint.visible { opacity: 1; }
+
+/* Extra bottom padding so the last row isn't hidden under the bar */
+body:has(.shortcut-bar) .content { padding-bottom: calc(3rem + 2.25rem); }
+
+/* Lift back-to-top above the bar */
+body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
+
 /* ─── Back to top ────────────────────────────────────────────────────────── */
 #back-to-top {
   position: fixed;
