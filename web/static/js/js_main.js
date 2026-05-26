@@ -1,3 +1,39 @@
+// ── Subtitle typing animation ─────────────────────────────────────────────
+(function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var SPEED = 34; // ms per character
+
+  document.querySelectorAll('.page-subtitle').forEach(function (el) {
+    var text = el.textContent.trim();
+    if (!text) return;
+
+    // Clear element, add text node + blinking cursor
+    el.textContent = '';
+    var textNode = document.createTextNode('');
+    var cursor   = document.createElement('span');
+    cursor.className   = 'type-cursor';
+    cursor.textContent = '|';
+    el.appendChild(textNode);
+    el.appendChild(cursor);
+
+    var i = 0;
+    function tick() {
+      if (i < text.length) {
+        textNode.textContent = text.slice(0, ++i);
+        setTimeout(tick, SPEED);
+      } else {
+        // Stop blinking and fade cursor out after a short pause
+        setTimeout(function () {
+          cursor.style.animation = 'none';
+          cursor.style.opacity   = '0';
+        }, 600);
+      }
+    }
+    tick();
+  });
+})();
+
 // ── Stat card count-up ───────────────────────────────────────────────────
 (function () {
   var els = document.querySelectorAll('[data-count]');
