@@ -80,6 +80,26 @@ def jobs():
                            counts=counts, heatmap=heatmap)
 
 
+@main_bp.route("/jobs/search")
+def jobs_search():
+    q  = request.args.get("q", "").strip()
+    db = get_db()
+    if q:
+        pattern = f"%{q}%"
+        rows = db.execute(
+            "SELECT id, title, company, status FROM jobs "
+            "WHERE title LIKE ? OR company LIKE ? "
+            "ORDER BY discovered_at DESC LIMIT 20",
+            (pattern, pattern),
+        ).fetchall()
+    else:
+        rows = db.execute(
+            "SELECT id, title, company, status FROM jobs "
+            "ORDER BY discovered_at DESC LIMIT 20"
+        ).fetchall()
+    return jsonify([dict(r) for r in rows])
+
+
 @main_bp.route("/jobs/scrape", methods=["POST"])
 def scrape_jobs():
     global _SCRAPE_IN_PROGRESS

@@ -1,3 +1,167 @@
+// ── Command palette ───────────────────────────────────────────────────────
+(function () {
+  var overlay  = document.getElementById('palette-overlay');
+  var input    = document.getElementById('palette-input');
+  var list     = document.getElementById('palette-results');
+  var emptyEl  = document.getElementById('palette-empty');
+  var trigger  = document.getElementById('palette-trigger');
+  var hint     = document.getElementById('palette-shortcut-hint');
+  if (!overlay || !input || !list) return;
+
+  var activeIdx = -1;
+  var results   = [];
+  var debounceT = null;
+  var reduced   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Show ⌘K on Mac, Ctrl K everywhere else
+  if (hint && /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent)) {
+    hint.textContent = '⌘K';
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function open() {
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    input.focus();
+    input.select();
+    fetch('/jobs/search?q=' + encodeURIComponent(input.value.trim()))
+      .then(function (r) { return r.json(); })
+      .then(renderResults)
+      .catch(function () {});
+  }
+
+  function close() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    input.value = '';
+    wipeResults();
+  }
+
+  function wipeResults() {
+    list.innerHTML = '';
+    activeIdx = -1;
+    results   = [];
+    if (emptyEl) emptyEl.hidden = true;
+  }
+
+  function setActive(idx) {
+    var items = list.querySelectorAll('.palette__result');
+    if (!items.length) return;
+    idx = Math.max(0, Math.min(idx, items.length - 1));
+    items.forEach(function (el, i) {
+      el.classList.toggle('palette__result--active', i === idx);
+    });
+    if (items[idx]) items[idx].scrollIntoView({ block: 'nearest' });
+    activeIdx = idx;
+  }
+
+  function renderResults(data) {
+    wipeResults();
+    results = data;
+    if (!data.length) {
+      if (emptyEl) emptyEl.hidden = false;
+      return;
+    }
+    data.forEach(function (job, i) {
+      var li = document.createElement('li');
+      li.className  = 'palette__result';
+      li.setAttribute('role', 'option');
+      li.innerHTML =
+        '<div class="palette__job-icon">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"' +
+              ' fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+            '<rect x="2" y="7" width="20" height="14" rx="2"/>' +
+            '<path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="palette__meta">' +
+          '<div class="palette__title">' + esc(job.title) + '</div>' +
+          (job.company ? '<div class="palette__company">' + esc(job.company) + '</div>' : '') +
+        '</div>' +
+        '<span class="palette__status palette__status--' + esc(job.status) + '">' + esc(job.status) + '</span>';
+      li.addEventListener('click', function () { navigate(i); });
+      li.addEventListener('mouseenter', function () {
+        var items = list.querySelectorAll('.palette__result');
+        items.forEach(function (el) { el.classList.remove('palette__result--active'); });
+        li.classList.add('palette__result--active');
+        activeIdx = i;
+      });
+      list.appendChild(li);
+    });
+  }
+
+  function navigate(idx) {
+    var job = results[idx >= 0 ? idx : 0];
+    if (!job) return;
+    close();
+    var dest    = '/jobs/' + job.id;
+    var content = document.querySelector('.content');
+    if (!reduced && content) {
+      content.classList.add('page-leaving');
+      setTimeout(function () { window.location.href = dest; }, 180);
+    } else {
+      window.location.href = dest;
+    }
+  }
+
+  input.addEventListener('input', function () {
+    clearTimeout(debounceT);
+    debounceT = setTimeout(function () {
+      fetch('/jobs/search?q=' + encodeURIComponent(input.value.trim()))
+        .then(function (r) { return r.json(); })
+        .then(renderResults)
+        .catch(function () {});
+    }, 160);
+  });
+
+  overlay.addEventListener('mousedown', function (e) {
+    if (e.target === overlay) close();
+  });
+
+  if (trigger) trigger.addEventListener('click', open);
+  if (emptyEl) {
+    // clicking Esc hint also closes
+    var escHint = document.querySelector('.palette__esc-hint');
+    if (escHint) escHint.addEventListener('click', close);
+  }
+
+  document.addEventListener('keydown', function (e) {
+    var mod = e.ctrlKey || e.metaKey;
+
+    if (mod && e.key === 'k') {
+      e.preventDefault();
+      overlay.classList.contains('open') ? close() : open();
+      return;
+    }
+
+    if (!overlay.classList.contains('open')) return;
+
+    switch (e.key) {
+      case 'Escape':
+        e.preventDefault();
+        close();
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        setActive(activeIdx + 1);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setActive(activeIdx <= 0 ? 0 : activeIdx - 1);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        navigate(activeIdx >= 0 ? activeIdx : 0);
+        break;
+    }
+  });
+})();
+
 // ── Jobs keyboard navigation ─────────────────────────────────────────────
 (function () {
   var tbody = document.querySelector('.real-tbody');

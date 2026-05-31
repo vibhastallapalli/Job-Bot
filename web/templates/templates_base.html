@@ -27,6 +27,13 @@
     <a href="{{ url_for('main.logs') }}"
        class="nav__link{% if ep == 'main.logs' %} active{% endif %}">Logs</a>
   </div>
+  <button id="palette-trigger" class="palette-trigger" aria-label="Search jobs — Ctrl K">
+    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <span>Search</span>
+    <kbd id="palette-shortcut-hint">Ctrl K</kbd>
+  </button>
   <button id="theme-toggle" class="nav__theme-toggle" aria-label="Toggle light/dark mode">
     <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
@@ -57,6 +64,28 @@
     <polyline points="18 15 12 9 6 15"/>
   </svg>
 </button>
+<div id="palette-overlay" class="palette-overlay" aria-hidden="true">
+  <div class="palette" role="dialog" aria-modal="true" aria-label="Search jobs">
+    <div class="palette__input-wrap">
+      <svg class="palette__search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input id="palette-input" class="palette__input" type="search"
+             placeholder="Search jobs by title or company…"
+             autocomplete="off" spellcheck="false" aria-autocomplete="list"
+             aria-controls="palette-results">
+      <kbd class="palette__esc-hint">Esc</kbd>
+    </div>
+    <ul id="palette-results" class="palette__results" role="listbox" aria-label="Job results"></ul>
+    <p id="palette-empty" class="palette__empty" hidden>No jobs match your search.</p>
+    <div class="palette__footer">
+      <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+      <span><kbd>↵</kbd> open</span>
+      <span><kbd>Esc</kbd> close</span>
+    </div>
+  </div>
+</div>
+
 <script src="{{ url_for('static', filename='js/js_main.js') }}"></script>
 </body>
 </html>
