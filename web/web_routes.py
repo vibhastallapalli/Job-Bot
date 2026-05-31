@@ -234,7 +234,36 @@ def job_detail(job_id):
     if not job:
         flash("Job not found.", "error")
         return redirect(url_for("main.jobs"))
-    return render_template("templates_job_detail.html", job=job)
+
+    earliest_app = db.execute(
+        "SELECT submitted_at FROM applications WHERE job_id=? ORDER BY submitted_at ASC LIMIT 1",
+        (job_id,),
+    ).fetchone()
+
+    status = job["status"]
+    _applied_s   = {"applied", "interview", "offer", "rejected"}
+    _responded_s = {"interview", "offer", "rejected"}
+    _interview_s = {"interview", "offer"}
+
+    applied_ts    = (earliest_app["submitted_at"] if earliest_app
+                     else (job["updated_at"] if status in _applied_s else None))
+    responded_ts  = job["updated_at"] if status in _responded_s  else None
+    interview_ts  = job["updated_at"] if status in _interview_s  else None
+    offer_ts      = job["updated_at"] if status == "offer"        else None
+
+    timeline = [
+        {"stage": "Discovered",  "done": True,                    "ts": job["discovered_at"]},
+        {"stage": "Applied",     "done": status in _applied_s,    "ts": applied_ts},
+        {"stage": "Responded",   "done": status in _responded_s,  "ts": responded_ts},
+        {"stage": "Interviewing","done": status in _interview_s,  "ts": interview_ts},
+        {"stage": "Offer",       "done": status == "offer",        "ts": offer_ts},
+    ]
+    # Mark the furthest completed step so CSS can add a pulse ring
+    last_done = max((i for i, s in enumerate(timeline) if s["done"]), default=0)
+    for i, step in enumerate(timeline):
+        step["current"] = (i == last_done)
+
+    return render_template("templates_job_detail.html", job=job, timeline=timeline)
 
 
 @main_bp.route("/jobs/<int:job_id>/status", methods=["POST"])

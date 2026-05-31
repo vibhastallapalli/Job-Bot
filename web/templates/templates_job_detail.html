@@ -48,6 +48,28 @@
     {% endif %}
   </div>
 
+  <div class="timeline-wrap">
+    <div class="timeline">
+      {% for step in timeline %}
+      <div class="timeline__step
+                  {%- if step.done %} timeline__step--done{% endif %}
+                  {%- if step.current %} timeline__step--current{% endif %}">
+        <div class="timeline__node">
+          {% if step.done %}
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          {% endif %}
+        </div>
+        <div class="timeline__label">{{ step.stage }}</div>
+        <div class="timeline__ts">{{ step.ts | fmtdt if step.ts else '' }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
   <div class="detail-body">
     <form method="POST" action="{{ url_for('main.update_job_status', job_id=job.id) }}"
           style="display:flex;gap:.75rem;align-items:flex-end">
