@@ -878,6 +878,30 @@ tbody tr:hover td { background: rgba(255,255,255,.022); }
 .row--active td { background: var(--accent-bg); }
 .row--active td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
 
+/* ─── New job row glow (discovered within last 24 h) ────────────────────── */
+@keyframes new-row-glow {
+  0%, 100% { box-shadow: inset 3px 0 0 var(--accent); }
+  50%       { box-shadow: inset 3px 0 0 var(--accent), inset 10px 0 18px rgba(124, 104, 245, .2); }
+}
+
+.row--new td {
+  background: rgba(124, 104, 245, .04);
+}
+
+.row--new td:first-child {
+  animation: new-row-glow 2.6s ease-in-out infinite;
+}
+
+/* Keep the active-row highlight readable on top of the new-row tint */
+.row--new.row--active td {
+  background: var(--accent-bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row--new td:first-child { animation: none; }
+  .row--new td { background: rgba(124, 104, 245, .06); }
+}
+
 /* ─── Shortcut hint bar ──────────────────────────────────────────────────── */
 .shortcut-bar {
   position: fixed;

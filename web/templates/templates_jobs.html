@@ -117,7 +117,7 @@
       </tbody>
       <tbody class="real-tbody">
         {% for job in jobs %}
-        <tr>
+        <tr{% if job.discovered_at >= cutoff_24h %} class="row--new"{% endif %}>
           <td><input type="checkbox" class="job-check" value="{{ job.id }}" style="cursor:pointer"></td>
           <td>
             <a class="job-link" href="{{ url_for('main.job_detail', job_id=job.id) }}">{{ job.title }}</a>

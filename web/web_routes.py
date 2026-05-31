@@ -18,6 +18,7 @@ _SCRAPE_IN_PROGRESS = False   # guarded by GIL; single scrape at a time
 
 @main_bp.route("/")
 def dashboard():
+    from datetime import datetime, timedelta
     db = get_db()
     applied    = db.execute("SELECT COUNT(*) FROM jobs WHERE status IN ('applied','interview','offer','rejected')").fetchone()[0]
     interviews = db.execute("SELECT COUNT(*) FROM jobs WHERE status='interview'").fetchone()[0]
@@ -34,6 +35,7 @@ def dashboard():
 
     from modules.email.email_outlook import TOKEN_CACHE_PATH
     outlook_connected = os.path.exists(TOKEN_CACHE_PATH)
+    cutoff_24h = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S")
 
     return render_template(
         "templates_index.html",
@@ -41,6 +43,7 @@ def dashboard():
         recent_jobs=recent_jobs,
         recent_logs=recent_logs,
         outlook_connected=outlook_connected,
+        cutoff_24h=cutoff_24h,
     )
 
 
@@ -48,6 +51,7 @@ def dashboard():
 
 @main_bp.route("/jobs")
 def jobs():
+    from datetime import datetime, timedelta
     status_filter = request.args.get("status", "all")
     db = get_db()
 
@@ -76,8 +80,9 @@ def jobs():
         for d, lbl in zip(_dow_order, _dow_labels)
     ]
 
+    cutoff_24h = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S")
     return render_template("templates_jobs.html", jobs=job_rows, status=status_filter,
-                           counts=counts, heatmap=heatmap)
+                           counts=counts, heatmap=heatmap, cutoff_24h=cutoff_24h)
 
 
 @main_bp.route("/jobs/search")
