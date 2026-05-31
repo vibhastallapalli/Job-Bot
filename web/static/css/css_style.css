@@ -958,6 +958,81 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
 #back-to-top:hover  { background: var(--accent-h); }
 #back-to-top:active { transform: translateY(1px); }
 
+/* ─── Application rate progress ring ────────────────────────────────────── */
+.ring-body {
+  display: flex;
+  align-items: center;
+  gap: 2.25rem;
+  padding: 1.75rem 2rem;
+}
+
+.ring-wrap {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  flex-shrink: 0;
+}
+
+.progress-ring {
+  display: block;
+  transform: rotate(-90deg);
+}
+
+.progress-ring__track {
+  fill: none;
+  stroke: var(--surface-3);
+  stroke-width: 10;
+}
+
+.progress-ring__fill {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 339.29;
+  stroke-dashoffset: 339.29;
+}
+
+.ring-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring-pct {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -.04em;
+}
+
+.ring-info__nums {
+  line-height: 1.1;
+  margin-bottom: .4rem;
+}
+
+.ring-info__applied {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -.04em;
+}
+
+.ring-info__total {
+  font-size: .95rem;
+  color: var(--text-2);
+}
+
+.ring-info__label {
+  font-size: .73rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--text-2);
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .stats-grid { grid-template-columns: repeat(3, 1fr); }

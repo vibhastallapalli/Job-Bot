@@ -71,6 +71,32 @@
 
 <div class="card">
   <div class="card__header">
+    <span class="card__title">Application Rate</span>
+  </div>
+  <div class="ring-body">
+    <div class="ring-wrap">
+      <svg class="progress-ring" viewBox="0 0 130 130"
+           aria-label="Application rate {{ (stats.applied / stats.total * 100) | round | int }}%">
+        <circle class="progress-ring__track" cx="65" cy="65" r="54"/>
+        <circle class="progress-ring__fill" cx="65" cy="65" r="54"
+                data-pct="{{ (stats.applied / stats.total * 100) | round | int }}"/>
+      </svg>
+      <div class="ring-inner">
+        <span class="ring-pct">0%</span>
+      </div>
+    </div>
+    <div class="ring-info">
+      <p class="ring-info__nums">
+        <span class="ring-info__applied">{{ stats.applied }}</span>
+        <span class="ring-info__total"> of {{ stats.total }}</span>
+      </p>
+      <p class="ring-info__label">discovered jobs applied to</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card__header">
     <span class="card__title">Recent Jobs</span>
     <a href="{{ url_for('main.jobs') }}" class="btn btn--ghost btn--sm">View all</a>
   </div>

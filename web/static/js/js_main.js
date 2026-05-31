@@ -374,6 +374,40 @@
   setInterval(poll, 10000);
 })();
 
+// ── Application rate progress ring ───────────────────────────────────────
+(function () {
+  var fill  = document.querySelector('.progress-ring__fill');
+  var pctEl = document.querySelector('.ring-pct');
+  if (!fill) return;
+
+  var pct           = parseInt(fill.getAttribute('data-pct'), 10) || 0;
+  var circumference = 2 * Math.PI * 54;
+  var targetOffset  = circumference * (1 - pct / 100);
+  var reduced       = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (reduced) {
+    fill.style.strokeDashoffset = targetOffset;
+    if (pctEl) pctEl.textContent = pct + '%';
+    return;
+  }
+
+  var DURATION = 1000;
+  var startTs  = null;
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  requestAnimationFrame(function tick(ts) {
+    if (!startTs) startTs = ts;
+    var progress = Math.min((ts - startTs) / DURATION, 1);
+    var eased    = easeOutCubic(progress);
+
+    fill.style.strokeDashoffset = circumference * (1 - eased * pct / 100);
+    if (pctEl) pctEl.textContent = Math.round(eased * pct) + '%';
+
+    if (progress < 1) requestAnimationFrame(tick);
+  });
+})();
+
 // ── Relative timestamps ───────────────────────────────────────────────────
 (function () {
   var els = document.querySelectorAll('.log-time[data-ts]');
