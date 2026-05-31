@@ -7,6 +7,20 @@
   <p class="page-subtitle">All discovered opportunities</p>
 </div>
 
+<div class="heatmap">
+  <span class="heatmap__heading">Applications by weekday</span>
+  <div class="heatmap__cells">
+    {% for day in heatmap %}
+    <div class="heatmap__cell{% if day.count > 0 %} heatmap__cell--active{% endif %}"
+         style="--w: {{ day.weight }}"
+         title="{{ day.count }} application{{ 's' if day.count != 1 else '' }} on {{ day.label }}s">
+      <span class="heatmap__day">{{ day.label }}</span>
+      <span class="heatmap__count">{{ day.count if day.count else '' }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
 {# Queue status bar #}
 <div id="queue-status-bar" style="display:flex;align-items:center;gap:1.5rem;padding:.6rem 1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:1rem;font-size:.82rem;color:var(--text-2)">
   <span>Queued: <strong id="qs-queued" style="color:var(--c-amber)">—</strong></span>

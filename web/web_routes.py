@@ -62,7 +62,22 @@ def jobs():
               for s in ("discovered", "applied", "interview", "rejected", "queued")}
     counts["all"] = db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
 
-    return render_template("templates_jobs.html", jobs=job_rows, status=status_filter, counts=counts)
+    dow_rows = db.execute(
+        "SELECT CAST(strftime('%w', submitted_at) AS INTEGER) AS dow, COUNT(*) AS cnt "
+        "FROM applications GROUP BY dow"
+    ).fetchall()
+    dow_map = {r["dow"]: r["cnt"] for r in dow_rows}
+    # strftime('%w'): 0=Sun, 1=Mon … 6=Sat — display Mon through Sun
+    _dow_order  = [1, 2, 3, 4, 5, 6, 0]
+    _dow_labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    _max = max((dow_map.get(d, 0) for d in _dow_order), default=0) or 1
+    heatmap = [
+        {"label": lbl, "count": dow_map.get(d, 0), "weight": round(dow_map.get(d, 0) / _max, 3)}
+        for d, lbl in zip(_dow_order, _dow_labels)
+    ]
+
+    return render_template("templates_jobs.html", jobs=job_rows, status=status_filter,
+                           counts=counts, heatmap=heatmap)
 
 
 @main_bp.route("/jobs/scrape", methods=["POST"])

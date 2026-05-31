@@ -958,6 +958,84 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
 #back-to-top:hover  { background: var(--accent-h); }
 #back-to-top:active { transform: translateY(1px); }
 
+/* ─── Day-of-week activity heatmap ──────────────────────────────────────── */
+.heatmap {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: .7rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 1rem;
+}
+
+.heatmap__heading {
+  font-size: .69rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--text-3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.heatmap__cells {
+  display: flex;
+  gap: .4rem;
+  flex: 1;
+}
+
+.heatmap__cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .28rem;
+  padding: .55rem .25rem;
+  border-radius: var(--r-xs);
+  background: var(--surface-3);
+  cursor: default;
+  transition: transform .12s ease, box-shadow .12s ease;
+  min-width: 0;
+  position: relative;
+}
+
+.heatmap__cell--active {
+  background: rgba(124, 104, 245, calc(0.12 + var(--w) * 0.78));
+}
+
+.heatmap__cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+  z-index: 1;
+}
+
+.heatmap__day {
+  font-size: .67rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--text-3);
+  line-height: 1;
+}
+
+.heatmap__cell--active .heatmap__day { color: var(--text-2); }
+
+.heatmap__count {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--text-3);
+  min-height: 1em;
+  line-height: 1;
+}
+
+.heatmap__cell--active .heatmap__count { color: var(--text); }
+
+@media (prefers-reduced-motion: reduce) {
+  .heatmap__cell { transition: none; }
+}
+
 /* ─── Application rate progress ring ────────────────────────────────────── */
 .ring-body {
   display: flex;
