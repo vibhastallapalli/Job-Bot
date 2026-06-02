@@ -1409,6 +1409,61 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
   letter-spacing: .02em;
 }
 
+/* ─── Company logo / initials avatar ────────────────────────────────────── */
+.co-cell {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+}
+
+.co-logo {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .62rem;
+  font-weight: 700;
+  color: var(--text-2);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Initials rendered via CSS content so they appear before JS runs */
+.co-logo::before {
+  content: attr(data-initial);
+  line-height: 1;
+  position: relative;
+  z-index: 0;
+}
+
+/* Colour variants — assigned by JS from a hash of the company name */
+.co-logo[data-color="purple"] { background: var(--accent-bg);  color: var(--accent);  border-color: rgba(124,104,245,.3); }
+.co-logo[data-color="blue"]   { background: var(--c-blue-bg);  color: var(--c-blue);  border-color: rgba(96,165,250,.3);  }
+.co-logo[data-color="green"]  { background: var(--c-green-bg); color: var(--c-green); border-color: rgba(52,211,153,.3);  }
+.co-logo[data-color="amber"]  { background: var(--c-amber-bg); color: var(--c-amber); border-color: rgba(251,191,36,.3);  }
+.co-logo[data-color="red"]    { background: var(--c-red-bg);   color: var(--c-red);   border-color: rgba(248,113,113,.3); }
+
+.co-logo__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity .2s ease;
+  z-index: 1;
+}
+
+/* Favicon loaded — slide it in over the initial */
+.co-logo--loaded .co-logo__img { opacity: 1; }
+
 /* ─── Skills tag cloud ───────────────────────────────────────────────────── */
 .tag-cloud-wrap { border-bottom: 1px solid var(--border); }
 

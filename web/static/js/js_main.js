@@ -629,6 +629,38 @@
   setInterval(update, 30000);
 })();
 
+// ── Company favicon / initials avatars ───────────────────────────────────
+(function () {
+  var logos = document.querySelectorAll('.co-logo[data-url]');
+  if (!logos.length) return;
+
+  var PALETTE = ['purple', 'blue', 'green', 'amber', 'red'];
+
+  logos.forEach(function (logo) {
+    var company = logo.getAttribute('data-company') || '';
+    var url     = logo.getAttribute('data-url')     || '';
+    var img     = logo.querySelector('.co-logo__img');
+    if (!img) return;
+
+    // Pick colour from palette by hashing first char of company name
+    logo.setAttribute('data-color', PALETTE[(company.charCodeAt(0) || 0) % PALETTE.length]);
+
+    // Extract bare hostname from the job posting URL
+    var domain = '';
+    try { domain = new URL(url).hostname.replace(/^www\./, ''); } catch (_) {}
+    if (!domain) return;
+
+    img.src = 'https://www.google.com/s2/favicons?domain='
+              + encodeURIComponent(domain) + '&sz=32';
+
+    img.addEventListener('load', function () {
+      logo.classList.add('co-logo--loaded');
+    }, { once: true });
+
+    // On error the initial stays visible — no action needed
+  });
+})();
+
 // ── Job description skills tag cloud ─────────────────────────────────────
 (function () {
   var cloud  = document.getElementById('tag-cloud');

@@ -144,7 +144,17 @@
             <a class="job-link" href="{{ url_for('main.job_detail', job_id=job.id) }}">{{ job.title }}</a>
             <span class="source-badge source-badge--{{ job.source | lower }}">{{ job.source | capitalize }}</span>
           </td>
-          <td style="font-weight:500">{{ job.company }}</td>
+          <td>
+            <div class="co-cell">
+              <div class="co-logo"
+                   data-initial="{{ (job.company or '?')[0] | upper }}"
+                   data-company="{{ job.company }}"
+                   data-url="{{ job.url }}">
+                <img class="co-logo__img" src="" alt="" aria-hidden="true">
+              </div>
+              <span style="font-weight:500">{{ job.company }}</span>
+            </div>
+          </td>
           <td class="td-muted">{{ job.location }}</td>
           <td><span class="source-tag">{{ job.source }}</span></td>
           <td><span class="badge badge--{{ job.status }}">{{ job.status }}</span></td>
