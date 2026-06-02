@@ -572,6 +572,28 @@
   });
 })();
 
+// ── Jobs sticky summary bar ───────────────────────────────────────────────
+(function () {
+  var bar      = document.getElementById('jobs-sticky-bar');
+  var sentinel = document.getElementById('jobs-scroll-sentinel');
+  if (!bar || !sentinel) return;
+
+  var navH = parseInt(
+    getComputedStyle(document.documentElement).getPropertyValue('--nav-h'), 10
+  ) || 54;
+
+  var obs = new IntersectionObserver(function (entries) {
+    var visible = !entries[0].isIntersecting;
+    bar.classList.toggle('visible', visible);
+    bar.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  }, {
+    rootMargin: '-' + navH + 'px 0px 0px 0px',
+    threshold: 0,
+  });
+
+  obs.observe(sentinel);
+})();
+
 // ── Relative timestamps ───────────────────────────────────────────────────
 (function () {
   var els = document.querySelectorAll('.log-time[data-ts]');

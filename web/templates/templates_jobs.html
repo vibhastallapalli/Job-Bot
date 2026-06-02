@@ -2,6 +2,26 @@
 {% block title %}Jobs — job-bot{% endblock %}
 
 {% block content %}
+<div id="jobs-sticky-bar" class="jobs-sticky-bar" aria-hidden="true">
+  <div class="jobs-sticky-bar__inner">
+    <span class="jobs-sticky-bar__title">Job Listings</span>
+    <div class="jobs-sticky-bar__stats">
+      <span class="jobs-sticky-stat">
+        <span class="jobs-sticky-stat__val">{{ counts.all }}</span>
+        <span class="jobs-sticky-stat__label">total</span>
+      </span>
+      <span class="jobs-sticky-stat jobs-sticky-stat--accent">
+        <span class="jobs-sticky-stat__val">{{ easy_apply_count }}</span>
+        <span class="jobs-sticky-stat__label">easy apply</span>
+      </span>
+      <span class="jobs-sticky-stat jobs-sticky-stat--amber">
+        <span class="jobs-sticky-stat__val">{{ counts.applied }}</span>
+        <span class="jobs-sticky-stat__label">applied</span>
+      </span>
+    </div>
+  </div>
+</div>
+
 <div class="page-header">
   <h1 class="page-title">Job Listings</h1>
   <p class="page-subtitle">All discovered opportunities</p>
@@ -86,6 +106,7 @@
   <div id="scrape-log-entries" class="live-log-entries"></div>
 </div>
 
+<div id="jobs-scroll-sentinel"></div>
 <div class="card">
   <div class="table-wrap">
     <table>

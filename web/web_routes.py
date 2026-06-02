@@ -80,9 +80,11 @@ def jobs():
         for d, lbl in zip(_dow_order, _dow_labels)
     ]
 
+    easy_apply_count = db.execute("SELECT COUNT(*) FROM jobs WHERE easy_apply=1").fetchone()[0]
     cutoff_24h = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S")
     return render_template("templates_jobs.html", jobs=job_rows, status=status_filter,
-                           counts=counts, heatmap=heatmap, cutoff_24h=cutoff_24h)
+                           counts=counts, heatmap=heatmap, cutoff_24h=cutoff_24h,
+                           easy_apply_count=easy_apply_count)
 
 
 @main_bp.route("/jobs/search")
