@@ -897,6 +897,73 @@
   });
 })();
 
+// ── Daily application goal counter ────────────────────────────────────────
+(function () {
+  var card    = document.getElementById('daily-goal-card');
+  if (!card) return;
+
+  var applied  = parseInt(card.getAttribute('data-applied'), 10) || 0;
+  var goal     = parseInt(card.getAttribute('data-goal'),    10) || 10;
+  var fillEl   = document.getElementById('dg-fill');
+  var countEl  = document.getElementById('dg-count');
+  var pctEl    = document.getElementById('dg-pct');
+  var burst    = document.getElementById('dg-burst');
+  var reduced  = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var targetPct = Math.min(applied / goal, 1);
+
+  if (reduced) {
+    if (fillEl)  fillEl.style.width      = (targetPct * 100) + '%';
+    if (countEl) countEl.textContent     = applied;
+    if (pctEl)   pctEl.textContent       = Math.round(targetPct * 100) + '%';
+    return;
+  }
+
+  var DURATION = 1100;
+  var startTs  = null;
+
+  function ease(t) { return 1 - Math.pow(1 - t, 3); }
+
+  requestAnimationFrame(function tick(ts) {
+    if (!startTs) startTs = ts;
+    var p   = Math.min((ts - startTs) / DURATION, 1);
+    var e   = ease(p);
+    var pct = e * targetPct * 100;
+
+    if (fillEl)  fillEl.style.width  = pct.toFixed(1) + '%';
+    if (countEl) countEl.textContent = Math.round(e * applied);
+    if (pctEl)   pctEl.textContent   = Math.round(pct) + '%';
+
+    if (p < 1) {
+      requestAnimationFrame(tick);
+    } else if (applied >= goal) {
+      spawnParticles();
+    }
+  });
+
+  function spawnParticles() {
+    if (!burst) return;
+    var COLORS = [
+      'var(--c-amber)', 'var(--accent)', 'var(--c-green)',
+      'var(--c-amber)', '#ffffff',       'var(--accent-h)',
+    ];
+    var count = 16;
+    for (var i = 0; i < count; i++) {
+      var angle = (i / count) * Math.PI * 2;
+      var dist  = 60 + Math.random() * 50;
+      var size  = (4 + Math.random() * 5).toFixed(1);
+      var p     = document.createElement('span');
+      p.className = 'burst-particle';
+      p.style.width  = size + 'px';
+      p.style.height = size + 'px';
+      p.style.background    = COLORS[i % COLORS.length];
+      p.style.setProperty('--tx', (Math.cos(angle) * dist).toFixed(0) + 'px');
+      p.style.setProperty('--ty', (Math.sin(angle) * dist).toFixed(0) + 'px');
+      p.style.animationDelay = (i * 0.035) + 's';
+      burst.appendChild(p);
+    }
+  }
+})();
+
 // ── Focus mode ────────────────────────────────────────────────────────────
 (function () {
   var btn = document.getElementById('focus-btn');

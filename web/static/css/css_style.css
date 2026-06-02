@@ -1862,6 +1862,162 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
   border: 1px solid rgba(124, 104, 245, .25);
 }
 
+/* ─── Daily application goal ─────────────────────────────────────────────── */
+.daily-goal-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-goal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem .7rem;
+}
+
+.daily-goal__title {
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.daily-goal__subtitle {
+  font-size: .72rem;
+  color: var(--text-3);
+  margin-top: .22rem;
+}
+
+.daily-goal__fraction {
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  padding-top: .1rem;
+}
+
+.daily-goal__count {
+  color: var(--c-amber);
+  transition: color .5s ease;
+}
+
+.goal-reached .daily-goal__count { color: var(--c-green); }
+
+.daily-goal__of {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+.daily-goal__bar-track {
+  height: 7px;
+  background: var(--surface-3);
+}
+
+.daily-goal__bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--c-amber), var(--accent));
+  border-radius: 0 4px 4px 0;
+  will-change: width;
+}
+
+.goal-reached .daily-goal__bar-fill {
+  background: linear-gradient(90deg, var(--c-green), var(--accent-h));
+}
+
+.daily-goal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .55rem 1.25rem .85rem;
+  font-size: .76rem;
+}
+
+.daily-goal__pct {
+  font-weight: 700;
+  color: var(--c-amber);
+  transition: color .5s ease;
+}
+
+.goal-reached .daily-goal__pct { color: var(--c-green); }
+
+.daily-goal__remaining { color: var(--text-3); }
+
+.daily-goal__celebrate-text {
+  font-weight: 600;
+  color: var(--c-green);
+  animation: celebrate-pop .5s cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+@keyframes celebrate-pop {
+  from { transform: scale(.65) translateY(3px); opacity: 0; }
+  to   { transform: scale(1)   translateY(0);   opacity: 1; }
+}
+
+/* Burst origin anchored to centre of bar */
+.daily-goal__burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Two expanding rings on goal reached */
+.goal-reached .daily-goal__burst::before,
+.goal-reached .daily-goal__burst::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 12px; height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  border: 2px solid var(--c-amber);
+  animation: ring-expand .9s ease-out forwards;
+}
+
+.goal-reached .daily-goal__burst::after {
+  width: 18px; height: 18px;
+  margin: -9px 0 0 -9px;
+  border-color: var(--c-green);
+  animation-delay: .2s;
+}
+
+@keyframes ring-expand {
+  0%   { transform: scale(1);  opacity: .9; }
+  100% { transform: scale(14); opacity: 0;  }
+}
+
+/* Particles created by JS */
+.burst-particle {
+  position: absolute;
+  top: 0; left: 0;
+  border-radius: 50%;
+  animation: particle-fly .85s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes particle-fly {
+  0%   { transform: translate(0, 0) scale(1);                       opacity: 1; }
+  75%  { opacity: .8; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0);       opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daily-goal__bar-fill,
+  .daily-goal__count,
+  .daily-goal__pct { transition: none; }
+  .burst-particle,
+  .daily-goal__celebrate-text,
+  .goal-reached .daily-goal__burst::before,
+  .goal-reached .daily-goal__burst::after { animation: none; }
+}
+
 /* ─── Focus mode ─────────────────────────────────────────────────────────── */
 #focus-overlay {
   display: none;

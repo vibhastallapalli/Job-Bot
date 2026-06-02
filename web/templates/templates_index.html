@@ -50,6 +50,33 @@
   </div>
 </div>
 
+<div class="card daily-goal-card{% if applied_today >= daily_goal %} goal-reached{% endif %}"
+     id="daily-goal-card"
+     data-applied="{{ applied_today }}"
+     data-goal="{{ daily_goal }}">
+  <div class="daily-goal__header">
+    <div>
+      <div class="daily-goal__title">Today's Applications</div>
+      <div class="daily-goal__subtitle">Daily goal: {{ daily_goal }} applications</div>
+    </div>
+    <div class="daily-goal__fraction">
+      <span class="daily-goal__count" id="dg-count">0</span><span class="daily-goal__of"> / {{ daily_goal }}</span>
+    </div>
+  </div>
+  <div class="daily-goal__bar-track">
+    <div class="daily-goal__bar-fill" id="dg-fill" data-pct="{{ goal_pct }}"></div>
+  </div>
+  <div class="daily-goal__footer">
+    <span class="daily-goal__pct" id="dg-pct">0%</span>
+    {% if applied_today >= daily_goal %}
+    <span class="daily-goal__celebrate-text">Goal reached — great work today!</span>
+    {% else %}
+    <span class="daily-goal__remaining">{{ daily_goal - applied_today }} more to reach today's goal</span>
+    {% endif %}
+  </div>
+  <div class="daily-goal__burst" id="dg-burst" aria-hidden="true"></div>
+</div>
+
 <div class="quote-card" id="quote-card">
   <blockquote class="quote-card__text" id="quote-text"></blockquote>
   <cite class="quote-card__author" id="quote-author"></cite>

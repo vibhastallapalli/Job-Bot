@@ -37,6 +37,13 @@ def dashboard():
     outlook_connected = os.path.exists(TOKEN_CACHE_PATH)
     cutoff_24h = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S")
 
+    from datetime import date
+    daily_goal = 10
+    today = date.today().isoformat()
+    ds_row = db.execute("SELECT applied FROM daily_stats WHERE date=?", (today,)).fetchone()
+    applied_today = ds_row["applied"] if ds_row else 0
+    goal_pct = min(round(applied_today / daily_goal * 100), 100)
+
     return render_template(
         "templates_index.html",
         stats=stats,
@@ -44,6 +51,9 @@ def dashboard():
         recent_logs=recent_logs,
         outlook_connected=outlook_connected,
         cutoff_24h=cutoff_24h,
+        applied_today=applied_today,
+        daily_goal=daily_goal,
+        goal_pct=goal_pct,
     )
 
 
