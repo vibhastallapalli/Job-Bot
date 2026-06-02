@@ -82,9 +82,16 @@ def jobs():
 
     easy_apply_count = db.execute("SELECT COUNT(*) FROM jobs WHERE easy_apply=1").fetchone()[0]
     cutoff_24h = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S")
+
+    all_jobs_kb = db.execute("SELECT * FROM jobs ORDER BY discovered_at DESC").fetchall()
+    kanban_cols = {"discovered": [], "applied": [], "interview": [], "offer": []}
+    for j in all_jobs_kb:
+        if j["status"] in kanban_cols:
+            kanban_cols[j["status"]].append(j)
+
     return render_template("templates_jobs.html", jobs=job_rows, status=status_filter,
                            counts=counts, heatmap=heatmap, cutoff_24h=cutoff_24h,
-                           easy_apply_count=easy_apply_count)
+                           easy_apply_count=easy_apply_count, kanban_cols=kanban_cols)
 
 
 @main_bp.route("/jobs/search")
@@ -105,6 +112,21 @@ def jobs_search():
             "ORDER BY discovered_at DESC LIMIT 20"
         ).fetchall()
     return jsonify([dict(r) for r in rows])
+
+
+@main_bp.route("/jobs/<int:job_id>/move", methods=["POST"])
+def move_job(job_id):
+    _kb_statuses = {"discovered", "applied", "interview", "offer"}
+    data = request.get_json(silent=True) or {}
+    new_status = data.get("status", "").strip()
+    if new_status not in _kb_statuses:
+        return jsonify({"ok": False, "error": "invalid status"}), 400
+    db = get_db()
+    if not db.execute("SELECT id FROM jobs WHERE id=?", (job_id,)).fetchone():
+        return jsonify({"ok": False, "error": "not found"}), 404
+    db.execute("UPDATE jobs SET status=?, updated_at=CURRENT_TIMESTAMP WHERE id=?", (new_status, job_id))
+    db.commit()
+    return jsonify({"ok": True})
 
 
 @main_bp.route("/jobs/scrape", methods=["POST"])

@@ -771,3 +771,128 @@
   textEl.textContent   = q.text;
   authorEl.textContent = '— ' + q.author;
 })();
+
+// ── Jobs view tab switcher ─────────────────────────────────────────────────
+(function () {
+  var tabs        = document.querySelectorAll('.view-tab');
+  var listSection = document.getElementById('list-view-section');
+  var boardSection = document.getElementById('board-view-section');
+  if (!tabs.length || !listSection || !boardSection) return;
+
+  function switchTo(view) {
+    var showList = view === 'list';
+    listSection.style.display  = showList ? '' : 'none';
+    boardSection.style.display = showList ? 'none' : '';
+    tabs.forEach(function (t) {
+      var isActive = t.getAttribute('data-view') === view;
+      t.classList.toggle('view-tab--active', isActive);
+      t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    try { localStorage.setItem('jobs-view', view); } catch (_) {}
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      switchTo(tab.getAttribute('data-view'));
+    });
+  });
+
+  try {
+    var saved = localStorage.getItem('jobs-view');
+    if (saved === 'board') switchTo('board');
+  } catch (_) {}
+})();
+
+// ── Kanban drag and drop ───────────────────────────────────────────────────
+(function () {
+  var board = document.querySelector('.kb-board');
+  if (!board) return;
+
+  var dragging  = null;
+  var sourceCol = null;
+
+  function colCount(col) {
+    return col.querySelector('.kb-col__cards').querySelectorAll('.kb-card').length;
+  }
+
+  function updateCount(col) {
+    var el = col.querySelector('.kb-col__count');
+    if (el) el.textContent = colCount(col);
+  }
+
+  board.addEventListener('dragstart', function (e) {
+    var card = e.target.closest('.kb-card');
+    if (!card) return;
+    dragging  = card;
+    sourceCol = card.closest('.kb-col');
+    setTimeout(function () { card.classList.add('kb-card--dragging'); }, 0);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', card.getAttribute('data-job-id'));
+  });
+
+  board.addEventListener('dragend', function () {
+    if (dragging) { dragging.classList.remove('kb-card--dragging'); }
+    dragging  = null;
+    sourceCol = null;
+    board.querySelectorAll('.kb-col--over').forEach(function (c) {
+      c.classList.remove('kb-col--over');
+    });
+  });
+
+  board.addEventListener('dragover', function (e) {
+    var col = e.target.closest('.kb-col');
+    if (!col) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    board.querySelectorAll('.kb-col--over').forEach(function (c) {
+      if (c !== col) c.classList.remove('kb-col--over');
+    });
+    col.classList.add('kb-col--over');
+  });
+
+  board.addEventListener('dragleave', function (e) {
+    var col = e.target.closest('.kb-col');
+    if (col && !col.contains(e.relatedTarget)) {
+      col.classList.remove('kb-col--over');
+    }
+  });
+
+  board.addEventListener('drop', function (e) {
+    e.preventDefault();
+    var col = e.target.closest('.kb-col');
+    if (!col || !dragging) return;
+    col.classList.remove('kb-col--over');
+
+    var newStatus = col.getAttribute('data-status');
+    var jobId     = dragging.getAttribute('data-job-id');
+    var oldStatus = dragging.getAttribute('data-status');
+    var prevCol   = sourceCol;
+
+    if (newStatus === oldStatus) return;
+
+    col.querySelector('.kb-col__cards').appendChild(dragging);
+    dragging.setAttribute('data-status', newStatus);
+    if (prevCol) updateCount(prevCol);
+    updateCount(col);
+
+    fetch('/jobs/' + jobId + '/move', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ status: newStatus }),
+    }).then(function (r) {
+      if (!r.ok && prevCol) {
+        prevCol.querySelector('.kb-col__cards').appendChild(dragging);
+        dragging.setAttribute('data-status', oldStatus);
+        updateCount(prevCol);
+        updateCount(col);
+      }
+    }).catch(function () {
+      if (prevCol) {
+        prevCol.querySelector('.kb-col__cards').appendChild(dragging);
+        dragging.setAttribute('data-status', oldStatus);
+        updateCount(prevCol);
+        updateCount(col);
+      }
+    });
+  });
+})();

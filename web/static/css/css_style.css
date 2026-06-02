@@ -1682,6 +1682,185 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
   .jobs-sticky-bar__inner { gap: .75rem; }
 }
 
+/* ─── View tabs (List / Board) ───────────────────────────────────────────── */
+.view-tabs {
+  display: flex;
+  gap: .35rem;
+  margin-bottom: 1rem;
+}
+
+.view-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .38rem .9rem;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: .8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .13s ease, color .13s ease, border-color .13s ease;
+}
+
+.view-tab:hover {
+  color: var(--text);
+  border-color: var(--border-2);
+  background: var(--surface-3);
+}
+
+.view-tab--active {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ─── Kanban board ───────────────────────────────────────────────────────── */
+.kb-board {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1.25rem;
+  align-items: flex-start;
+  min-height: 360px;
+}
+
+.kb-col {
+  flex: 0 0 260px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.kb-col__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .6rem 1rem;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.kb-col__title {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.kb-col__count {
+  font-size: .7rem;
+  font-weight: 700;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: .08rem .42rem;
+  color: var(--text-2);
+  min-width: 1.3rem;
+  text-align: center;
+}
+
+.kb-col__cards {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: .65rem;
+  flex: 1;
+  min-height: 80px;
+}
+
+.kb-col--over {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.kb-col--over .kb-col__cards {
+  background: transparent;
+}
+
+.kb-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: .65rem .75rem;
+  cursor: grab;
+  transition: box-shadow .13s ease, border-color .13s ease, opacity .13s ease;
+  user-select: none;
+}
+
+.kb-card:hover {
+  border-color: var(--border-2);
+  box-shadow: 0 4px 14px rgba(0,0,0,.22);
+}
+
+.kb-card:active {
+  cursor: grabbing;
+}
+
+.kb-card--dragging {
+  opacity: .4;
+  box-shadow: none;
+}
+
+.kb-card__title {
+  font-size: .82rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: .28rem;
+}
+
+.kb-card__title a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.kb-card__title a:hover {
+  color: var(--accent);
+}
+
+.kb-card__company {
+  font-size: .74rem;
+  color: var(--text-2);
+  margin-bottom: .4rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kb-card__meta {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  flex-wrap: wrap;
+}
+
+.kb-card__date {
+  font-size: .67rem;
+  color: var(--text-3);
+  margin-left: auto;
+}
+
+.kb-card__badge {
+  font-size: .62rem;
+  font-weight: 700;
+  padding: .08rem .32rem;
+  border-radius: 100px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.kb-card__badge--ea {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid rgba(124, 104, 245, .25);
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .stats-grid { grid-template-columns: repeat(3, 1fr); }
