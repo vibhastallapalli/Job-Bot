@@ -628,3 +628,37 @@
   update();
   setInterval(update, 30000);
 })();
+
+// ── Dashboard motivational quote ──────────────────────────────────────────
+(function () {
+  var textEl   = document.getElementById('quote-text');
+  var authorEl = document.getElementById('quote-author');
+  if (!textEl || !authorEl) return;
+
+  var quotes = [
+    { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+    { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+    { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+    { text: "Hard work beats talent when talent doesn't work hard.", author: "Tim Notke" },
+    { text: "Opportunities don't happen. You create them.", author: "Chris Grosser" },
+    { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+    { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+    { text: "You miss 100% of the shots you don't take.", author: "Wayne Gretzky" },
+    { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
+    { text: "Whether you think you can or you think you can't, you're right.", author: "Henry Ford" },
+    { text: "The only place where success comes before work is in the dictionary.", author: "Vidal Sassoon" },
+    { text: "Great things are not done by impulse, but by a series of small things brought together.", author: "Vincent Van Gogh" },
+    { text: "I never dreamed about success. I worked for it.", author: "Estée Lauder" },
+    { text: "Chase the vision, not the money; the money will end up following you.", author: "Tony Hsieh" },
+    { text: "Don't be afraid to give up the good to go for the great.", author: "John D. Rockefeller" },
+    { text: "The difference between ordinary and extraordinary is that little extra.", author: "Jimmy Johnson" },
+    { text: "Perseverance is not a long race; it is many short races one after another.", author: "Walter Elliot" },
+    { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
+    { text: "You don't have to be great to start, but you have to start to be great.", author: "Zig Ziglar" },
+    { text: "Your work is going to fill a large part of your life. The only way to be truly satisfied is to do what you believe is great work.", author: "Steve Jobs" },
+  ];
+
+  var q = quotes[Math.floor(Math.random() * quotes.length)];
+  textEl.textContent   = q.text;
+  authorEl.textContent = '— ' + q.author;
+})();

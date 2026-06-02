@@ -1365,6 +1365,50 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
   color: var(--text-2);
 }
 
+/* ─── Motivational quote card ────────────────────────────────────────────── */
+.quote-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r);
+  padding: 1.25rem 4rem 1.25rem 1.6rem;
+  margin-bottom: 1.75rem;
+  overflow: hidden;
+  min-height: 4rem;
+}
+
+.quote-card::after {
+  content: '\201C';
+  position: absolute;
+  top: -.6rem;
+  right: 1rem;
+  font-size: 7rem;
+  line-height: 1;
+  color: var(--accent);
+  opacity: .08;
+  font-family: Georgia, 'Times New Roman', serif;
+  pointer-events: none;
+  user-select: none;
+}
+
+.quote-card__text {
+  font-size: .9rem;
+  color: var(--text);
+  line-height: 1.7;
+  font-style: italic;
+  margin: 0 0 .55rem;
+}
+
+.quote-card__author {
+  display: block;
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--text-2);
+  font-style: normal;
+  letter-spacing: .02em;
+}
+
 /* ─── Job status timeline ────────────────────────────────────────────────── */
 .timeline-wrap {
   padding: 1.6rem 2rem 1.4rem;
