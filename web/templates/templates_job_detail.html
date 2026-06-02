@@ -70,6 +70,16 @@
     </div>
   </div>
 
+  {% if job.description %}
+  <div class="tag-cloud-wrap">
+    <div class="card__header">
+      <span class="card__title">Skills &amp; Keywords</span>
+    </div>
+    <div id="tag-cloud" class="tag-cloud"></div>
+    <p id="job-desc-raw" hidden aria-hidden="true">{{ job.description | striptags }}</p>
+  </div>
+  {% endif %}
+
   <div class="detail-body">
     <form method="POST" action="{{ url_for('main.update_job_status', job_id=job.id) }}"
           style="display:flex;gap:.75rem;align-items:flex-end">

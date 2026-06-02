@@ -629,6 +629,83 @@
   setInterval(update, 30000);
 })();
 
+// ── Job description skills tag cloud ─────────────────────────────────────
+(function () {
+  var cloud  = document.getElementById('tag-cloud');
+  var rawEl  = document.getElementById('job-desc-raw');
+  if (!cloud || !rawEl) return;
+
+  var STOP = new Set([
+    // Common English function words
+    'able','about','above','across','after','again','ago','all','also','although',
+    'among','and','any','are','around','been','before','being','below','between',
+    'both','but','can','come','could','did','does','during','each','either',
+    'even','ever','every','for','from','get','give','given','goes','gone',
+    'got','had','has','have','help','here','how','into','its','just','large',
+    'less','like','look','made','make','may','more','most','much','must',
+    'need','nor','not','off','often','once','only','other','our','out','over',
+    'own','per','put','same','she','should','since','small','some','such',
+    'take','than','that','the','their','them','then','there','these','they',
+    'this','those','through','too','two','until','upon','use','used','very',
+    'was','well','were','what','when','where','while','who','will','with',
+    'within','without','would','yet','you','your',
+    // Job-description boilerplate
+    'ability','applicant','apply','candidate','collaborate','come','company',
+    'compensation','drive','duties','excellent','experience','flexible',
+    'grow','hire','hiring','hybrid','include','includes','including',
+    'join','looking','opportunity','passion','position','preferred',
+    'qualifications','remote','require','required','requirements','role',
+    'salary','seeking','team','work','working','years','you\'re',
+  ]);
+
+  // Strip any residual HTML tags by parsing through a temporary element
+  var tmp = document.createElement('div');
+  tmp.innerHTML = rawEl.textContent;
+  var text = tmp.textContent || '';
+
+  // Tokenise: lowercase alphabetic runs of 3+ characters
+  var tokens = text.toLowerCase().match(/[a-z]{3,}/g) || [];
+
+  // Count frequencies, skipping stopwords
+  var freq = {};
+  tokens.forEach(function (w) {
+    if (!STOP.has(w)) freq[w] = (freq[w] || 0) + 1;
+  });
+
+  // Sort by frequency desc, take top 40
+  var ranked = Object.keys(freq)
+    .map(function (w) { return { word: w, count: freq[w] }; })
+    .sort(function (a, b) { return b.count - a.count || a.word.localeCompare(b.word); })
+    .slice(0, 40);
+
+  if (!ranked.length) return;
+
+  var maxFreq = ranked[0].count;
+
+  function sizeLevel(count) {
+    var r = count / maxFreq;
+    if (r >= 0.8) return 5;
+    if (r >= 0.6) return 4;
+    if (r >= 0.35) return 3;
+    if (r >= 0.15) return 2;
+    return 1;
+  }
+
+  // Display alphabetically so same-size words are visually mixed
+  ranked.sort(function (a, b) { return a.word.localeCompare(b.word); });
+
+  var frag = document.createDocumentFragment();
+  ranked.forEach(function (item) {
+    var span = document.createElement('span');
+    span.className = 'tag-cloud__pill';
+    span.setAttribute('data-size', sizeLevel(item.count));
+    span.setAttribute('title', item.count + (item.count === 1 ? ' mention' : ' mentions'));
+    span.textContent = item.word;
+    frag.appendChild(span);
+  });
+  cloud.appendChild(frag);
+})();
+
 // ── Dashboard motivational quote ──────────────────────────────────────────
 (function () {
   var textEl   = document.getElementById('quote-text');

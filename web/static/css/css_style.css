@@ -1409,6 +1409,44 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
   letter-spacing: .02em;
 }
 
+/* ─── Skills tag cloud ───────────────────────────────────────────────────── */
+.tag-cloud-wrap { border-bottom: 1px solid var(--border); }
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .45rem;
+  padding: 1.1rem 1.25rem;
+  min-height: 3rem;
+}
+
+.tag-cloud__pill {
+  display: inline-flex;
+  align-items: center;
+  padding: .24rem .68rem;
+  border-radius: 100px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid rgba(124, 104, 245, .22);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: default;
+  transition: background .12s, border-color .12s;
+}
+
+.tag-cloud__pill:hover {
+  background: rgba(124, 104, 245, .22);
+  border-color: rgba(124, 104, 245, .45);
+}
+
+.tag-cloud__pill[data-size="5"] { font-size: 1.05rem; font-weight: 700; }
+.tag-cloud__pill[data-size="4"] { font-size: .9rem;   font-weight: 600; }
+.tag-cloud__pill[data-size="3"] { font-size: .8rem;   font-weight: 500; }
+.tag-cloud__pill[data-size="2"] { font-size: .73rem;  font-weight: 500; opacity: .82; }
+.tag-cloud__pill[data-size="1"] { font-size: .67rem;  font-weight: 400; opacity: .62; }
+
 /* ─── Job status timeline ────────────────────────────────────────────────── */
 .timeline-wrap {
   padding: 1.6rem 2rem 1.4rem;
