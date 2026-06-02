@@ -896,3 +896,67 @@
     });
   });
 })();
+
+// ── Focus mode ────────────────────────────────────────────────────────────
+(function () {
+  var btn = document.getElementById('focus-btn');
+  if (!btn) return;
+
+  var body      = document.body;
+  var iconEnter = btn.querySelector('.focus-icon-enter');
+  var iconExit  = btn.querySelector('.focus-icon-exit');
+  var label     = btn.querySelector('.focus-btn__label');
+
+  // Create overlay and hint once
+  var overlay = document.createElement('div');
+  overlay.id = 'focus-overlay';
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(overlay);
+
+  var hint = document.createElement('div');
+  hint.id = 'focus-exit-hint';
+  hint.innerHTML = 'Press <kbd>Esc</kbd> to exit focus mode &ensp;&middot;&ensp; <kbd>F</kbd> to toggle';
+  hint.setAttribute('role', 'status');
+  hint.setAttribute('aria-live', 'polite');
+  document.body.appendChild(hint);
+
+  function resetHintAnimation() {
+    hint.style.animation = 'none';
+    hint.getBoundingClientRect();
+    hint.style.animation = '';
+  }
+
+  function enterFocus() {
+    body.classList.add('focus-mode');
+    btn.setAttribute('aria-pressed', 'true');
+    if (label) label.textContent = 'Exit';
+    if (iconEnter) iconEnter.style.display = 'none';
+    if (iconExit)  iconExit.style.display  = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    resetHintAnimation();
+  }
+
+  function exitFocus() {
+    body.classList.remove('focus-mode');
+    btn.setAttribute('aria-pressed', 'false');
+    if (label) label.textContent = 'Focus';
+    if (iconEnter) iconEnter.style.display = '';
+    if (iconExit)  iconExit.style.display  = 'none';
+  }
+
+  btn.addEventListener('click', function () {
+    body.classList.contains('focus-mode') ? exitFocus() : enterFocus();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && body.classList.contains('focus-mode')) {
+      exitFocus();
+      return;
+    }
+    if (e.key === 'f' || e.key === 'F') {
+      var tag = (document.activeElement || {}).tagName || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      body.classList.contains('focus-mode') ? exitFocus() : enterFocus();
+    }
+  });
+})();
