@@ -17,7 +17,7 @@
     <a href="{{ url_for('main.dashboard') }}"
        class="nav__link{% if ep == 'main.dashboard' %} active{% endif %}">Dashboard</a>
     <a href="{{ url_for('main.jobs') }}"
-       class="nav__link{% if ep in ('main.jobs', 'main.job_detail') %} active{% endif %}">Jobs</a>
+       class="nav__link{% if ep in ('main.jobs', 'main.job_detail') %} active{% endif %}">Jobs{% if nav_discovered > 0 %}<span class="nav__dot nav__dot--green" aria-hidden="true"></span>{% endif %}</a>
     <a href="{{ url_for('main.resume') }}"
        class="nav__link{% if ep == 'main.resume' %} active{% endif %}">Resume</a>
     <a href="{{ url_for('main.applications') }}"
@@ -25,7 +25,7 @@
     <a href="{{ url_for('main.settings') }}"
        class="nav__link{% if ep == 'main.settings' %} active{% endif %}">Settings</a>
     <a href="{{ url_for('main.logs') }}"
-       class="nav__link{% if ep == 'main.logs' %} active{% endif %}">Logs</a>
+       class="nav__link{% if ep == 'main.logs' %} active{% endif %}">Logs{% if nav_log_errors > 0 %}<span class="nav__dot nav__dot--red" aria-hidden="true"></span>{% endif %}</a>
   </div>
   <button id="palette-trigger" class="palette-trigger" aria-label="Search jobs — Ctrl K">
     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

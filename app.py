@@ -22,6 +22,24 @@ def create_app():
     app.teardown_appcontext(close_db)
     app.register_blueprint(main_bp)
 
+    @app.context_processor
+    def nav_counts():
+        from database.database_db import get_db
+        from datetime import datetime, timedelta
+        try:
+            db = get_db()
+            discovered = db.execute(
+                "SELECT COUNT(*) FROM jobs WHERE status='discovered'"
+            ).fetchone()[0]
+            cutoff = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S")
+            log_errors = db.execute(
+                "SELECT COUNT(*) FROM logs WHERE level='ERROR' AND created_at >= ?", (cutoff,)
+            ).fetchone()[0]
+        except Exception:
+            discovered = 0
+            log_errors = 0
+        return {"nav_discovered": discovered, "nav_log_errors": log_errors}
+
     @app.errorhandler(404)
     def page_not_found(e):
         from flask import render_template

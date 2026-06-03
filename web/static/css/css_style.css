@@ -141,6 +141,7 @@ a:hover { color: var(--accent-h); }
 .nav__link {
   display: flex;
   align-items: center;
+  position: relative;
   height: 34px;
   padding: 0 .85rem;
   border-radius: var(--r-sm);
@@ -148,6 +149,32 @@ a:hover { color: var(--accent-h); }
   font-size: .875rem;
   transition: color .14s, background .14s;
   white-space: nowrap;
+}
+
+.nav__dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.nav__dot--green {
+  background: var(--c-green);
+  animation: nav-dot-pulse 2.4s ease-in-out infinite;
+}
+
+.nav__dot--red { background: var(--c-red); }
+
+@keyframes nav-dot-pulse {
+  0%, 100% { opacity: 1;  transform: scale(1); }
+  50%       { opacity: .5; transform: scale(1.4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav__dot--green { animation: none; }
 }
 
 .nav__link:hover  { color: var(--text); background: var(--surface-3); }
