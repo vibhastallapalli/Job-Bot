@@ -897,6 +897,57 @@
   });
 })();
 
+// ── Applicant competition meter ───────────────────────────────────────────
+(function () {
+  var meter   = document.getElementById('comp-meter');
+  if (!meter) return;
+
+  var needleG = document.getElementById('comp-needle-g');
+  var labelEl = document.getElementById('comp-label');
+  var n       = parseInt(meter.getAttribute('data-applicants'), 10) || 0;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Map applicant count to a 0–180° gauge angle, zone-proportional
+  function toAngle(n) {
+    if (n <= 0)  return 0;
+    if (n < 25)  return (n / 25) * 60;
+    if (n < 75)  return 60 + ((n - 25) / 50) * 60;
+    return Math.min(120 + ((n - 75) / 75) * 60, 180);
+  }
+
+  function bandFor(n) {
+    if (n < 25) return { cls: 'green',  text: 'Low competition'      };
+    if (n < 75) return { cls: 'yellow', text: 'Moderate competition' };
+    return        { cls: 'red',    text: 'High competition'     };
+  }
+
+  var target = toAngle(n);
+  var band   = bandFor(n);
+
+  if (labelEl) {
+    labelEl.textContent = band.text;
+    labelEl.className   = 'comp-meter__label comp-meter__label--' + band.cls;
+  }
+
+  function setNeedle(deg) {
+    if (needleG) needleG.setAttribute('transform', 'rotate(' + deg.toFixed(2) + ' 60 60)');
+  }
+
+  if (reduced) { setNeedle(target); return; }
+
+  var DURATION = 950;
+  var startTs  = null;
+
+  function ease(t) { return 1 - Math.pow(1 - t, 3); }
+
+  requestAnimationFrame(function tick(ts) {
+    if (!startTs) startTs = ts;
+    var p = Math.min((ts - startTs) / DURATION, 1);
+    setNeedle(ease(p) * target);
+    if (p < 1) requestAnimationFrame(tick);
+  });
+})();
+
 // ── Daily application goal counter ────────────────────────────────────────
 (function () {
   var card    = document.getElementById('daily-goal-card');

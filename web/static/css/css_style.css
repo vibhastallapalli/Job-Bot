@@ -1862,6 +1862,67 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
   border: 1px solid rgba(124, 104, 245, .25);
 }
 
+/* ─── Applicant competition meter ────────────────────────────────────────── */
+.comp-meter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .35rem;
+  padding: 1.1rem 1.25rem 1.2rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.comp-meter__svg {
+  width: 180px;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.comp-meter__bg {
+  fill: var(--surface-3);
+}
+
+.comp-meter__zone       { opacity: .38; }
+.comp-meter__zone--green  { fill: var(--c-green); }
+.comp-meter__zone--yellow { fill: var(--c-amber); }
+.comp-meter__zone--red    { fill: var(--c-red);   }
+
+.comp-meter__tick {
+  stroke: var(--surface);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.comp-meter__needle {
+  stroke: var(--text);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.comp-meter__cap {
+  fill: var(--surface-2);
+  stroke: var(--text);
+  stroke-width: 2;
+}
+
+.comp-meter__label {
+  font-size: .88rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  color: var(--text);
+}
+
+.comp-meter__label--green  { color: var(--c-green); }
+.comp-meter__label--yellow { color: var(--c-amber); }
+.comp-meter__label--red    { color: var(--c-red);   }
+
+.comp-meter__count {
+  font-size: .76rem;
+  color: var(--text-3);
+}
+
 /* ─── Daily application goal ─────────────────────────────────────────────── */
 .daily-goal-card {
   position: relative;

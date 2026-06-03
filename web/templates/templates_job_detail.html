@@ -48,6 +48,37 @@
     {% endif %}
   </div>
 
+  {% if job.applicant_count %}
+  <div class="comp-meter" id="comp-meter" data-applicants="{{ job.applicant_count }}">
+    <svg class="comp-meter__svg" viewBox="0 0 120 66" role="img"
+         aria-label="Competition gauge: {{ job.applicant_count }} applicants">
+      {# Background doughnut — two 90° arcs avoids the degenerate 180° case #}
+      <path class="comp-meter__bg"
+            d="M 6 60 A 54 54 0 0 1 60 6 A 54 54 0 0 1 114 60
+               L 98 60 A 38 38 0 0 0 60 22 A 38 38 0 0 0 22 60 Z"/>
+      {# Green zone  0°–60°  (< 25 applicants) #}
+      <path class="comp-meter__zone comp-meter__zone--green"
+            d="M 6 60 A 54 54 0 0 1 33 13.23 L 41 27.09 A 38 38 0 0 0 22 60 Z"/>
+      {# Yellow zone 60°–120° (25–75 applicants) #}
+      <path class="comp-meter__zone comp-meter__zone--yellow"
+            d="M 33 13.23 A 54 54 0 0 1 87 13.23 L 79 27.09 A 38 38 0 0 0 41 27.09 Z"/>
+      {# Red zone   120°–180° (75+ applicants) #}
+      <path class="comp-meter__zone comp-meter__zone--red"
+            d="M 87 13.23 A 54 54 0 0 1 114 60 L 98 60 A 38 38 0 0 0 79 27.09 Z"/>
+      {# Zone-boundary tick marks #}
+      <line class="comp-meter__tick" x1="33" y1="13.23" x2="35.5" y2="17.56"/>
+      <line class="comp-meter__tick" x1="87" y1="13.23" x2="84.5" y2="17.56"/>
+      {# Needle rotated by JS — starts pointing left (0 applicants) #}
+      <g id="comp-needle-g" transform="rotate(0 60 60)">
+        <line class="comp-meter__needle" x1="60" y1="60" x2="14" y2="60"/>
+      </g>
+      <circle class="comp-meter__cap" cx="60" cy="60" r="5.5"/>
+    </svg>
+    <div class="comp-meter__label" id="comp-label"></div>
+    <div class="comp-meter__count">{{ job.applicant_count }} applicant{{ 's' if job.applicant_count != 1 else '' }}</div>
+  </div>
+  {% endif %}
+
   <div class="timeline-wrap">
     <div class="timeline">
       {% for step in timeline %}
