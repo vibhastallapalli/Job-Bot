@@ -1862,6 +1862,156 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
   border: 1px solid rgba(124, 104, 245, .25);
 }
 
+/* ─── Live stats bubble ──────────────────────────────────────────────────── */
+.lsb-root {
+  position: fixed;
+  bottom: 1.4rem;
+  left: 1.4rem;
+  z-index: 85;
+}
+
+.lsb {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 14px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .35), 0 0 0 0 rgba(124, 104, 245, 0);
+  min-width: 178px;
+  transition: border-radius .24s cubic-bezier(.16,1,.3,1),
+              min-width     .24s cubic-bezier(.16,1,.3,1),
+              box-shadow    .2s ease;
+}
+
+.lsb--collapsed {
+  border-radius: 100px;
+  min-width: 0;
+}
+
+/* The always-visible pill header */
+.lsb__pill {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  width: 100%;
+  padding: .52rem .8rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-2);
+  border-radius: inherit;
+  text-align: left;
+}
+
+.lsb__pill:hover { color: var(--text); }
+
+.lsb__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c-green);
+  box-shadow: 0 0 5px var(--c-green);
+  flex-shrink: 0;
+  animation: lsb-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes lsb-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 5px var(--c-green); }
+  50%       { opacity: .45; box-shadow: none; }
+}
+
+.lsb__pill-label {
+  font-size: .73rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: max-width .24s cubic-bezier(.16,1,.3,1), opacity .18s ease;
+  max-width: 120px;
+}
+
+.lsb--collapsed .lsb__pill-label {
+  max-width: 0;
+  opacity: 0;
+}
+
+.lsb__chevron {
+  flex-shrink: 0;
+  color: var(--text-3);
+  transition: transform .22s cubic-bezier(.16,1,.3,1), opacity .18s ease;
+  margin-left: auto;
+}
+
+.lsb--collapsed .lsb__chevron {
+  transform: rotate(180deg);
+  opacity: 0;
+}
+
+/* Collapsible body */
+.lsb__body {
+  display: grid;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+  transition: grid-template-rows .24s cubic-bezier(.16,1,.3,1),
+              opacity .2s ease;
+  opacity: 1;
+}
+
+.lsb--collapsed .lsb__body {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+/* Inner wrapper needed for grid row collapse trick */
+.lsb__body > * { min-height: 0; }
+
+.lsb__body {
+  border-top: 1px solid var(--border);
+  padding: 0 .85rem;
+  transition: grid-template-rows .24s cubic-bezier(.16,1,.3,1),
+              padding .22s ease,
+              opacity .2s ease,
+              border-color .2s ease;
+}
+
+.lsb--collapsed .lsb__body {
+  padding-top: 0;
+  padding-bottom: 0;
+  border-color: transparent;
+}
+
+.lsb__stat {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  padding: .38rem 0;
+}
+
+.lsb__stat:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+
+.lsb__val {
+  font-size: 1rem;
+  font-weight: 700;
+  min-width: 2.4rem;
+  text-align: right;
+  line-height: 1;
+}
+
+.lsb__val--accent { color: var(--accent); }
+.lsb__val--amber  { color: var(--c-amber); }
+.lsb__val--green  { color: var(--c-green); }
+
+.lsb__label {
+  font-size: .71rem;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lsb, .lsb__body, .lsb__pill-label, .lsb__chevron { transition: none; }
+  .lsb__dot { animation: none; }
+}
+
 /* ─── Settings tabs ──────────────────────────────────────────────────────── */
 .stab { margin-bottom: 1.5rem; }
 

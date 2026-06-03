@@ -86,6 +86,34 @@
   </div>
 </div>
 
+<div id="lsb-root" class="lsb-root">
+  <div class="lsb" id="lsb" role="region" aria-label="Live job stats">
+    <button class="lsb__pill" id="lsb-toggle" aria-expanded="true" aria-controls="lsb-body">
+      <span class="lsb__dot" aria-hidden="true"></span>
+      <span class="lsb__pill-label">Live Stats</span>
+      <svg class="lsb__chevron" xmlns="http://www.w3.org/2000/svg" width="11" height="11"
+           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="18 15 12 9 6 15"/>
+      </svg>
+    </button>
+    <div class="lsb__body" id="lsb-body">
+      <div class="lsb__stat">
+        <span class="lsb__val lsb__val--accent" id="lsb-total">—</span>
+        <span class="lsb__label">discovered</span>
+      </div>
+      <div class="lsb__stat">
+        <span class="lsb__val lsb__val--amber" id="lsb-applied">—</span>
+        <span class="lsb__label">applied</span>
+      </div>
+      <div class="lsb__stat">
+        <span class="lsb__val lsb__val--green" id="lsb-rate">—</span>
+        <span class="lsb__label">success rate</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="{{ url_for('static', filename='js/js_main.js') }}"></script>
 </body>
 </html>

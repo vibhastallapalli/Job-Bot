@@ -1110,3 +1110,43 @@
     }
   });
 })();
+
+// ── Live stats bubble ──────────────────────────────────────────────────────
+(function () {
+  var toggle   = document.getElementById('lsb-toggle');
+  var lsb      = document.getElementById('lsb');
+  var totalEl  = document.getElementById('lsb-total');
+  var appliedEl= document.getElementById('lsb-applied');
+  var rateEl   = document.getElementById('lsb-rate');
+  if (!toggle || !lsb) return;
+
+  var collapsed = false;
+  try { collapsed = localStorage.getItem('lsb-collapsed') === '1'; } catch(_) {}
+
+  function applyState(animate) {
+    lsb.classList.toggle('lsb--collapsed', collapsed);
+    toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  }
+
+  applyState(false);
+
+  toggle.addEventListener('click', function () {
+    collapsed = !collapsed;
+    applyState(true);
+    try { localStorage.setItem('lsb-collapsed', collapsed ? '1' : '0'); } catch(_) {}
+  });
+
+  function loadStats() {
+    fetch('/api/stats')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (totalEl)   totalEl.textContent   = d.total;
+        if (appliedEl) appliedEl.textContent = d.applied;
+        if (rateEl)    rateEl.textContent    = d.success_rate + '%';
+      })
+      .catch(function () {});
+  }
+
+  loadStats();
+  setInterval(loadStats, 60000);
+})();

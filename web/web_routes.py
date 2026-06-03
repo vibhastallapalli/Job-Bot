@@ -649,6 +649,19 @@ def _email_sync_worker(config: dict) -> None:
         conn.close()
 
 
+# ── Live stats API ─────────────────────────────────────────────────────────
+
+@main_bp.route("/api/stats")
+def api_stats():
+    db = get_db()
+    total      = db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
+    applied    = db.execute("SELECT COUNT(*) FROM jobs WHERE status IN ('applied','interview','offer','rejected')").fetchone()[0]
+    interviews = db.execute("SELECT COUNT(*) FROM jobs WHERE status='interview'").fetchone()[0]
+    offers     = db.execute("SELECT COUNT(*) FROM jobs WHERE status='offer'").fetchone()[0]
+    rate       = round((interviews + offers) / applied * 100) if applied else 0
+    return jsonify({"total": total, "applied": applied, "success_rate": rate})
+
+
 # ── Demo seed ──────────────────────────────────────────────────────────────
 
 @main_bp.route("/demo/seed", methods=["POST"])
