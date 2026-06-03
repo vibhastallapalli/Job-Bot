@@ -9,335 +9,488 @@
 
 <form method="POST">
 
-  {# ── Applicant info ──────────────────────────────────────────────────── #}
-  <div class="card" style="margin-bottom:1.5rem">
-    <div class="card__header"><span class="card__title">Applicant Info</span></div>
-    <div style="padding:1.25rem 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Full name</label>
-        <input class="form-input" type="text" name="applicant_name"
-               value="{{ config.applicant.name }}" placeholder="Jane Smith" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Email</label>
-        <input class="form-input" type="email" name="applicant_email"
-               value="{{ config.applicant.email }}" placeholder="jane@example.com" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Phone</label>
-        <input class="form-input" type="tel" name="applicant_phone"
-               value="{{ config.applicant.phone }}" placeholder="+1 555 000 0000" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">LinkedIn profile URL</label>
-        <input class="form-input" type="url" name="applicant_linkedin"
-               value="{{ config.applicant.linkedin }}" placeholder="https://linkedin.com/in/…" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">GitHub profile URL</label>
-        <input class="form-input" type="url" name="applicant_github"
-               value="{{ config.applicant.github }}" placeholder="https://github.com/…" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">City</label>
-        <input class="form-input" type="text" name="applicant_city"
-               value="{{ config.applicant.city if config.applicant.city is defined else '' }}"
-               placeholder="New York" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">State / Province</label>
-        <input class="form-input" type="text" name="applicant_state"
-               value="{{ config.applicant.state if config.applicant.state is defined else '' }}"
-               placeholder="NY" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Country</label>
-        <input class="form-input" type="text" name="applicant_country"
-               value="{{ config.applicant.country if config.applicant.country is defined else 'United States' }}"
-               placeholder="United States" />
-      </div>
-    </div>
-  </div>
+<div class="stab">
 
-  {# ── Application answers ──────────────────────────────────────────────── #}
-  <div class="card" style="margin-bottom:1.5rem">
-    <div class="card__header"><span class="card__title">Application Answers</span>
-      <span style="font-size:.76rem;font-weight:400;color:var(--text-2)">
-        Pre-filled answers for common Easy Apply questions
-      </span>
-    </div>
-    <div style="padding:1.25rem 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Authorized to work in US?</label>
-        <select class="form-select" name="ans_work_authorization">
-          {% set wa = config.answers.work_authorization if config.answers is defined else 'Yes' %}
-          <option value="Yes" {% if wa == 'Yes' %}selected{% endif %}>Yes</option>
-          <option value="No"  {% if wa == 'No'  %}selected{% endif %}>No</option>
-        </select>
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Requires visa sponsorship?</label>
-        <select class="form-select" name="ans_requires_sponsorship">
-          {% set sp = config.answers.requires_sponsorship if config.answers is defined else 'No' %}
-          <option value="No"  {% if sp == 'No'  %}selected{% endif %}>No</option>
-          <option value="Yes" {% if sp == 'Yes' %}selected{% endif %}>Yes</option>
-        </select>
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Willing to relocate?</label>
-        <select class="form-select" name="ans_willing_to_relocate">
-          {% set wr = config.answers.willing_to_relocate if config.answers is defined else 'No' %}
-          <option value="No"  {% if wr == 'No'  %}selected{% endif %}>No</option>
-          <option value="Yes" {% if wr == 'Yes' %}selected{% endif %}>Yes</option>
-        </select>
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Years of experience</label>
-        <input class="form-input" type="text" name="ans_years_experience"
-               value="{{ config.answers.years_experience if config.answers is defined else '' }}"
-               placeholder="e.g. 3" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Desired salary</label>
-        <input class="form-input" type="text" name="ans_desired_salary"
-               value="{{ config.answers.desired_salary if config.answers is defined else '' }}"
-               placeholder="e.g. 120000" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Earliest start date</label>
-        <input class="form-input" type="text" name="ans_earliest_start_date"
-               value="{{ config.answers.earliest_start_date if config.answers is defined else '2 weeks' }}"
-               placeholder="e.g. 2 weeks" />
-      </div>
-      <div class="form-group" style="margin:0;grid-column:1/-1">
-        <label class="form-label">Cover letter <span style="font-weight:400;text-transform:none">(used when a text box is shown)</span></label>
-        <textarea class="form-input" name="ans_cover_letter" rows="4"
-                  style="resize:vertical"
-                  placeholder="Write a short cover letter that will be pasted into text boxes…">{{ config.answers.cover_letter if config.answers is defined else '' }}</textarea>
-      </div>
-    </div>
-  </div>
+  {# ── Tab navigation ─────────────────────────────────────────────────────── #}
+  <div class="stab__nav" role="tablist" aria-label="Settings sections">
 
-  {# ── LinkedIn scraper ────────────────────────────────────────────────── #}
-  <div class="card" style="margin-bottom:1.5rem">
-    <div class="card__header"><span class="card__title">LinkedIn Scraper</span></div>
-    <div style="padding:1.25rem 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-      <div class="form-group" style="margin:0">
-        <label class="form-label">LinkedIn email</label>
-        <input class="form-input" type="email" name="li_email"
-               value="{{ config.linkedin.email if config.linkedin is defined else '' }}"
-               placeholder="your@email.com" autocomplete="off" />
+    <button class="stab__tab stab__tab--active" type="button"
+            data-tab="linkedin" role="tab" aria-selected="true" aria-controls="stab-linkedin">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span>LinkedIn</span>
+    </button>
+
+    <button class="stab__tab" type="button"
+            data-tab="search" role="tab" aria-selected="false" aria-controls="stab-search">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <span>Job Search</span>
+    </button>
+
+    <button class="stab__tab" type="button"
+            data-tab="browser" role="tab" aria-selected="false" aria-controls="stab-browser">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+        <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+        <line x1="1" y1="14" x2="7" y2="14"/>
+        <line x1="9" y1="8" x2="15" y2="8"/>
+        <line x1="17" y1="16" x2="23" y2="16"/>
+      </svg>
+      <span>Browser &amp; Email</span>
+    </button>
+
+    <button class="stab__tab" type="button"
+            data-tab="answers" role="tab" aria-selected="false" aria-controls="stab-answers">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10 9 9 9 8 9"/>
+      </svg>
+      <span>Answers</span>
+    </button>
+
+  </div>{# /stab__nav #}
+
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     TAB 1 — LinkedIn
+     Applicant profile + LinkedIn scraper credentials
+  ══════════════════════════════════════════════════════════════════════════ #}
+  <div class="stab__panel stab__panel--active" id="stab-linkedin"
+       data-panel="linkedin" role="tabpanel" aria-labelledby="tab-linkedin">
+
+    {# Applicant Info #}
+    <div class="card stab__card">
+      <div class="card__header">
+        <span class="card__title">Applicant Info</span>
       </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">LinkedIn password</label>
-        <input class="form-input" type="password" name="li_password"
-               placeholder="Leave blank to keep existing"
-               autocomplete="new-password" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Applicant count filter</label>
-        <select class="form-select" name="li_applicant_filter">
-          {% set af = config.linkedin.applicant_filter if (config.linkedin is defined and config.linkedin.applicant_filter is defined) else 'no_filter' %}
-          <option value="no_filter"  {% if af == 'no_filter'  %}selected{% endif %}>No filter</option>
-          <option value="under_10"   {% if af == 'under_10'   %}selected{% endif %}>Under 10 applicants</option>
-          <option value="under_25"   {% if af == 'under_25'   %}selected{% endif %}>Under 25 applicants</option>
-          <option value="under_50"   {% if af == 'under_50'   %}selected{% endif %}>Under 50 applicants</option>
-          <option value="under_100"  {% if af == 'under_100'  %}selected{% endif %}>Under 100 applicants</option>
-        </select>
-        <div style="font-size:.76rem;color:var(--text-2);margin-top:.3rem">
-          Appended to each search query, e.g. "mechanical engineering coop under 10 applicants".
+      <div class="stab__grid">
+
+        <div class="form-group">
+          <label class="form-label">Full name</label>
+          <input class="form-input" type="text" name="applicant_name"
+                 value="{{ config.applicant.name }}" placeholder="Jane Smith" />
         </div>
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Max pages per search</label>
-        <input class="form-input" type="number" name="li_max_pages" min="1" max="20"
-               value="{{ config.linkedin.max_pages if config.linkedin is defined else 3 }}" />
-        <div style="font-size:.76rem;color:var(--text-2);margin-top:.3rem">
-          Each page has up to 25 jobs. 3 pages = up to 75 results per keyword.
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" name="applicant_email"
+                 value="{{ config.applicant.email }}" placeholder="jane@example.com" />
         </div>
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Date posted</label>
-        <select class="form-select" name="li_date_posted">
-          {% set dp = config.linkedin.date_posted if config.linkedin is defined else 'past_week' %}
-          <option value="past_day"   {% if dp == 'past_day'   %}selected{% endif %}>Past 24 hours</option>
-          <option value="past_week"  {% if dp == 'past_week'  %}selected{% endif %}>Past week</option>
-          <option value="past_month" {% if dp == 'past_month' %}selected{% endif %}>Past month</option>
-        </select>
+
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-input" type="tel" name="applicant_phone"
+                 value="{{ config.applicant.phone }}" placeholder="+1 555 000 0000" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">LinkedIn profile URL</label>
+          <input class="form-input" type="url" name="applicant_linkedin"
+                 value="{{ config.applicant.linkedin }}"
+                 placeholder="https://linkedin.com/in/…" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">GitHub profile URL</label>
+          <input class="form-input" type="url" name="applicant_github"
+                 value="{{ config.applicant.github }}"
+                 placeholder="https://github.com/…" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input class="form-input" type="text" name="applicant_city"
+                 value="{{ config.applicant.city if config.applicant.city is defined else '' }}"
+                 placeholder="New York" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">State / Province</label>
+          <input class="form-input" type="text" name="applicant_state"
+                 value="{{ config.applicant.state if config.applicant.state is defined else '' }}"
+                 placeholder="NY" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Country</label>
+          <input class="form-input" type="text" name="applicant_country"
+                 value="{{ config.applicant.country if config.applicant.country is defined else 'United States' }}"
+                 placeholder="United States" />
+        </div>
+
       </div>
     </div>
-  </div>
 
-  {# ── Job search ──────────────────────────────────────────────────────── #}
-  <div class="card" style="margin-bottom:1.5rem">
-    <div class="card__header"><span class="card__title">Job Search</span></div>
-    <div style="padding:1.25rem 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Keywords <span style="font-weight:400;text-transform:none;letter-spacing:0">(comma-separated)</span></label>
-        <input class="form-input" type="text" name="keywords"
-               value="{{ config.job_search.keywords | join(', ') }}"
-               placeholder="software engineer, backend developer" />
+    {# LinkedIn Scraper #}
+    <div class="card stab__card">
+      <div class="card__header">
+        <span class="card__title">LinkedIn Credentials</span>
       </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Locations <span style="font-weight:400;text-transform:none;letter-spacing:0">(comma-separated)</span></label>
-        <input class="form-input" type="text" name="locations"
-               value="{{ config.job_search.locations | join(', ') }}"
-               placeholder="Remote, New York NY" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Blacklisted companies <span style="font-weight:400;text-transform:none;letter-spacing:0">(comma-separated)</span></label>
-        <input class="form-input" type="text" name="blacklist"
-               value="{{ config.job_search.blacklisted_companies | join(', ') }}"
-               placeholder="Acme Corp, Bad Startup Inc" />
-      </div>
+      <div class="stab__grid">
 
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Job Type</label>
-        {% set sel_types = config.job_search.job_types if (config.job_search.job_types is defined) else [] %}
-        <div style="display:flex;flex-wrap:wrap;gap:.5rem .75rem;margin-top:.35rem">
-          {% for jt in ['Co-op', 'Internship', 'Full-time', 'Part-time'] %}
-          <label style="display:flex;align-items:center;gap:.4rem;font-size:.875rem;font-weight:400;cursor:pointer">
-            <input type="checkbox" name="job_types" value="{{ jt }}"
-                   {% if jt in sel_types %}checked{% endif %}
-                   style="width:15px;height:15px;accent-color:var(--accent);cursor:pointer" />
-            {{ jt }}
+        <div class="form-group">
+          <label class="form-label">LinkedIn email</label>
+          <input class="form-input" type="email" name="li_email"
+                 value="{{ config.linkedin.email if config.linkedin is defined else '' }}"
+                 placeholder="your@email.com" autocomplete="off" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">LinkedIn password</label>
+          <input class="form-input" type="password" name="li_password"
+                 placeholder="Leave blank to keep existing"
+                 autocomplete="new-password" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Applicant count filter</label>
+          <select class="form-select" name="li_applicant_filter">
+            {% set af = config.linkedin.applicant_filter if (config.linkedin is defined and config.linkedin.applicant_filter is defined) else 'no_filter' %}
+            <option value="no_filter" {% if af == 'no_filter' %}selected{% endif %}>No filter</option>
+            <option value="under_10"  {% if af == 'under_10'  %}selected{% endif %}>Under 10 applicants</option>
+            <option value="under_25"  {% if af == 'under_25'  %}selected{% endif %}>Under 25 applicants</option>
+            <option value="under_50"  {% if af == 'under_50'  %}selected{% endif %}>Under 50 applicants</option>
+            <option value="under_100" {% if af == 'under_100' %}selected{% endif %}>Under 100 applicants</option>
+          </select>
+          <div class="field-hint">Appended to each search query, e.g. "software engineer under 10 applicants".</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Max pages per search</label>
+          <input class="form-input" type="number" name="li_max_pages" min="1" max="20"
+                 value="{{ config.linkedin.max_pages if config.linkedin is defined else 3 }}" />
+          <div class="field-hint">Each page has up to 25 jobs. 3 pages = up to 75 results per keyword.</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Date posted</label>
+          <select class="form-select" name="li_date_posted">
+            {% set dp = config.linkedin.date_posted if config.linkedin is defined else 'past_week' %}
+            <option value="past_day"   {% if dp == 'past_day'   %}selected{% endif %}>Past 24 hours</option>
+            <option value="past_week"  {% if dp == 'past_week'  %}selected{% endif %}>Past week</option>
+            <option value="past_month" {% if dp == 'past_month' %}selected{% endif %}>Past month</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+  </div>{# /stab-linkedin #}
+
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     TAB 2 — Job Search
+  ══════════════════════════════════════════════════════════════════════════ #}
+  <div class="stab__panel" id="stab-search"
+       data-panel="search" role="tabpanel" aria-labelledby="tab-search">
+
+    <div class="card stab__card">
+      <div class="card__header">
+        <span class="card__title">Job Search</span>
+      </div>
+      <div class="stab__grid">
+
+        <div class="form-group">
+          <label class="form-label">
+            Keywords
+            <span class="form-label__note">comma-separated</span>
           </label>
-          {% endfor %}
+          <input class="form-input" type="text" name="keywords"
+                 value="{{ config.job_search.keywords | join(', ') }}"
+                 placeholder="software engineer, backend developer" />
         </div>
-      </div>
 
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Work Type</label>
-        {% set sel_work = config.job_search.work_types if (config.job_search.work_types is defined) else [] %}
-        <div style="display:flex;flex-wrap:wrap;gap:.5rem .75rem;margin-top:.35rem">
-          {% for wt in ['Remote', 'Hybrid', 'On-site'] %}
-          <label style="display:flex;align-items:center;gap:.4rem;font-size:.875rem;font-weight:400;cursor:pointer">
-            <input type="checkbox" name="work_types" value="{{ wt }}"
-                   {% if wt in sel_work %}checked{% endif %}
-                   style="width:15px;height:15px;accent-color:var(--accent);cursor:pointer" />
-            {{ wt }}
+        <div class="form-group">
+          <label class="form-label">
+            Locations
+            <span class="form-label__note">comma-separated</span>
           </label>
-          {% endfor %}
+          <input class="form-input" type="text" name="locations"
+                 value="{{ config.job_search.locations | join(', ') }}"
+                 placeholder="Remote, New York NY" />
         </div>
-        <div style="font-size:.76rem;color:var(--text-2);margin-top:.4rem">
-          Filters LinkedIn results by work arrangement. Leave all unchecked to show every type.
+
+        <div class="form-group stab__grid--span">
+          <label class="form-label">
+            Blacklisted companies
+            <span class="form-label__note">comma-separated</span>
+          </label>
+          <input class="form-input" type="text" name="blacklist"
+                 value="{{ config.job_search.blacklisted_companies | join(', ') }}"
+                 placeholder="Acme Corp, Bad Startup Inc" />
         </div>
+
+        <div class="form-group">
+          <label class="form-label">Job type</label>
+          {% set sel_types = config.job_search.job_types if (config.job_search.job_types is defined) else [] %}
+          <div class="check-group">
+            {% for jt in ['Co-op', 'Internship', 'Full-time', 'Part-time'] %}
+            <label class="check-label">
+              <input type="checkbox" name="job_types" value="{{ jt }}"
+                     {% if jt in sel_types %}checked{% endif %}
+                     class="check-input" />
+              {{ jt }}
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Work type</label>
+          {% set sel_work = config.job_search.work_types if (config.job_search.work_types is defined) else [] %}
+          <div class="check-group">
+            {% for wt in ['Remote', 'Hybrid', 'On-site'] %}
+            <label class="check-label">
+              <input type="checkbox" name="work_types" value="{{ wt }}"
+                     {% if wt in sel_work %}checked{% endif %}
+                     class="check-input" />
+              {{ wt }}
+            </label>
+            {% endfor %}
+          </div>
+          <div class="field-hint">Leave all unchecked to show every arrangement.</div>
+        </div>
+
       </div>
     </div>
-  </div>
 
-  {# ── Outlook email ───────────────────────────────────────────────────── #}
-  <div class="card" style="margin-bottom:1.5rem">
-    <div class="card__header"><span class="card__title">Outlook Email Sync</span></div>
-    <div style="padding:1.25rem 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+  </div>{# /stab-search #}
 
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Client ID</label>
-        <input class="form-input" type="text" name="ms_client_id"
-               value="{{ config.microsoft.client_id if config.microsoft is defined else '' }}"
-               placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-               autocomplete="off" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Client Secret</label>
-        <input class="form-input" type="password" name="ms_client_secret"
-               placeholder="Leave blank to keep existing"
-               autocomplete="new-password" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Tenant ID</label>
-        <input class="form-input" type="text" name="ms_tenant_id"
-               value="{{ config.microsoft.tenant_id if config.microsoft is defined else 'common' }}"
-               placeholder="common  or  your-tenant-id" />
-        <div style="font-size:.76rem;color:var(--text-2);margin-top:.3rem">
-          Use <code>common</code> for personal accounts. For UWaterloo or a work account, paste
-          your Azure Directory (tenant) ID here.
-        </div>
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Redirect URI</label>
-        <input class="form-input" type="text" name="ms_redirect_uri"
-               value="{{ config.microsoft.redirect_uri if config.microsoft is defined else 'http://localhost:5000/email/auth/callback' }}"
-               placeholder="http://localhost:5000/email/auth/callback" />
-        <div style="font-size:.76rem;color:var(--text-2);margin-top:.3rem">
-          Must match the redirect URI registered in Azure exactly.
-        </div>
-      </div>
 
-      {# Azure setup guide ─────────────────────────────────────────────── #}
-      <div style="grid-column:1/-1;margin-top:.25rem">
-        <details style="background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:.75rem 1rem">
-          <summary style="cursor:pointer;font-size:.85rem;font-weight:600;color:var(--text);list-style:none;display:flex;align-items:center;gap:.5rem">
-            <span>&#9654;</span> Azure App Registration — step-by-step
-          </summary>
-          <ol style="margin:.75rem 0 0 1.25rem;font-size:.82rem;color:var(--text-2);line-height:1.9">
-            <li>Go to <strong style="color:var(--text)">portal.azure.com</strong> and sign in with the same Microsoft account you use for Outlook.</li>
-            <li>Search for <strong style="color:var(--text)">Azure Active Directory</strong> (or <em>Microsoft Entra ID</em>) → <strong style="color:var(--text)">App registrations</strong> → <strong style="color:var(--text)">+ New registration</strong>.</li>
-            <li>Name: anything (e.g. <code>job-bot</code>). Supported account types: choose <em>Single tenant</em> for a work/school account or <em>Multitenant + personal</em> for @outlook.com / @hotmail.com.</li>
-            <li>Redirect URI platform: <strong style="color:var(--text)">Web</strong>. URI: <code>http://localhost:5000/email/auth/callback</code>. Click <strong style="color:var(--text)">Register</strong>.</li>
-            <li>On the Overview page, copy <strong style="color:var(--text)">Application (client) ID</strong> → paste above as Client ID.</li>
-            <li>Copy <strong style="color:var(--text)">Directory (tenant) ID</strong> → paste above as Tenant ID (or use <code>common</code> for personal accounts).</li>
-            <li>Go to <strong style="color:var(--text)">Certificates &amp; secrets</strong> → <strong style="color:var(--text)">+ New client secret</strong>. Set any expiry, click Add, then copy the <strong style="color:var(--text)">Value</strong> immediately (it disappears on reload) → paste above as Client Secret.</li>
-            <li>Go to <strong style="color:var(--text)">API permissions</strong> → <strong style="color:var(--text)">+ Add a permission</strong> → Microsoft Graph → Delegated → search <code>Mail.Read</code> → Add.</li>
-            <li>If your org requires it: click <strong style="color:var(--text)">Grant admin consent</strong>. For personal accounts this step is skipped.</li>
-            <li>Save settings here, then click <strong style="color:var(--text)">Connect Outlook</strong> on the Dashboard.</li>
-          </ol>
-        </details>
+  {# ═══════════════════════════════════════════════════════════════════════════
+     TAB 3 — Browser & Email
+     Browser settings + AI form filling + Outlook config
+  ══════════════════════════════════════════════════════════════════════════ #}
+  <div class="stab__panel" id="stab-browser"
+       data-panel="browser" role="tabpanel" aria-labelledby="tab-browser">
+
+    {# Browser #}
+    <div class="card stab__card">
+      <div class="card__header">
+        <span class="card__title">Browser</span>
       </div>
-
-    </div>
-  </div>
-
-  {# ── Browser ─────────────────────────────────────────────────────────── #}
-  <div class="card" style="margin-bottom:1.5rem">
-    <div class="card__header"><span class="card__title">Browser</span></div>
-    <div style="padding:1.25rem 1.5rem">
-      <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;font-size:.875rem">
-        <input type="checkbox" name="headless"
-               {% if config.browser.headless %}checked{% endif %}
-               style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer" />
-        Run browser headless (invisible)
-      </label>
-      <div style="font-size:.76rem;color:var(--text-2);margin-top:.5rem;margin-left:1.6rem">
-        Disable headless if LinkedIn requires 2FA / CAPTCHA verification on first login.
-      </div>
-    </div>
-  </div>
-
-  {# ── AI form filling ─────────────────────────────────────────────────── #}
-  <div class="card" style="margin-bottom:1.5rem">
-    <div class="card__header"><span class="card__title">AI Form Filling</span>
-      <span style="font-size:.76rem;font-weight:400;color:var(--text-2)">
-        Uses Claude to answer required questions your config doesn't cover
-      </span>
-    </div>
-    <div style="padding:1.25rem 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-      <div class="form-group" style="margin:0;grid-column:1/-1">
-        <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;font-size:.875rem">
-          <input type="checkbox" name="ai_enabled"
-                 {% if config.ai is defined and config.ai.enabled %}checked{% endif %}
-                 style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer" />
-          Enable AI form filling
+      <div class="stab__section">
+        <label class="check-label check-label--lg">
+          <input type="checkbox" name="headless"
+                 {% if config.browser.headless %}checked{% endif %}
+                 class="check-input" />
+          Run browser headless (invisible)
         </label>
-        <div style="font-size:.76rem;color:var(--text-2);margin-top:.35rem;margin-left:1.6rem">
-          When enabled, any required field your config can't answer is sent to Claude instead of abandoning the application.
+        <div class="field-hint" style="margin-left:1.65rem">
+          Disable headless if LinkedIn requires 2FA / CAPTCHA verification on first login.
         </div>
       </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Anthropic API key</label>
-        <input class="form-input" type="password" name="ai_api_key"
-               placeholder="Leave blank to keep existing"
-               autocomplete="new-password" />
+    </div>
+
+    {# AI Form Filling #}
+    <div class="card stab__card">
+      <div class="card__header">
+        <span class="card__title">AI Form Filling</span>
+        <span class="card__header-note">Uses Claude to answer questions your config doesn't cover</span>
       </div>
-      <div class="form-group" style="margin:0;grid-column:1/-1">
-        <label class="form-label">Bio <span style="font-weight:400;text-transform:none">(Claude uses this as source material when answering questions)</span></label>
-        <textarea class="form-input" name="applicant_bio" rows="4" style="resize:vertical"
-                  placeholder="Your background, skills, and experience in a short paragraph…">{{ config.applicant.bio if (config.applicant is defined and config.applicant.bio is defined) else '' }}</textarea>
+      <div class="stab__grid">
+
+        <div class="form-group stab__grid--span">
+          <label class="check-label check-label--lg">
+            <input type="checkbox" name="ai_enabled"
+                   {% if config.ai is defined and config.ai.enabled %}checked{% endif %}
+                   class="check-input" />
+            Enable AI form filling
+          </label>
+          <div class="field-hint" style="margin-left:1.65rem">
+            Required fields your config can't answer are sent to Claude instead of abandoning the application.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Anthropic API key</label>
+          <input class="form-input" type="password" name="ai_api_key"
+                 placeholder="Leave blank to keep existing"
+                 autocomplete="new-password" />
+        </div>
+
+        <div class="form-group stab__grid--span">
+          <label class="form-label">
+            Bio
+            <span class="form-label__note">Claude uses this as source material when answering questions</span>
+          </label>
+          <textarea class="form-input" name="applicant_bio" rows="4" style="resize:vertical"
+                    placeholder="Your background, skills, and experience in a short paragraph…">{{ config.applicant.bio if (config.applicant is defined and config.applicant.bio is defined) else '' }}</textarea>
+        </div>
+
       </div>
     </div>
-  </div>
 
+    {# Outlook Email Sync #}
+    <div class="card stab__card">
+      <div class="card__header">
+        <span class="card__title">Outlook Email Sync</span>
+      </div>
+      <div class="stab__grid">
+
+        <div class="form-group">
+          <label class="form-label">Client ID</label>
+          <input class="form-input" type="text" name="ms_client_id"
+                 value="{{ config.microsoft.client_id if config.microsoft is defined else '' }}"
+                 placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                 autocomplete="off" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Client Secret</label>
+          <input class="form-input" type="password" name="ms_client_secret"
+                 placeholder="Leave blank to keep existing"
+                 autocomplete="new-password" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tenant ID</label>
+          <input class="form-input" type="text" name="ms_tenant_id"
+                 value="{{ config.microsoft.tenant_id if config.microsoft is defined else 'common' }}"
+                 placeholder="common  or  your-tenant-id" />
+          <div class="field-hint">
+            Use <code>common</code> for personal accounts. For a work/school account paste your Azure Directory (tenant) ID.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Redirect URI</label>
+          <input class="form-input" type="text" name="ms_redirect_uri"
+                 value="{{ config.microsoft.redirect_uri if config.microsoft is defined else 'http://localhost:5000/email/auth/callback' }}"
+                 placeholder="http://localhost:5000/email/auth/callback" />
+          <div class="field-hint">Must match the redirect URI registered in Azure exactly.</div>
+        </div>
+
+        <div class="stab__grid--span" style="margin-top:.25rem">
+          <details class="azure-guide">
+            <summary class="azure-guide__summary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2.5"
+                   stroke-linecap="round" stroke-linejoin="round" class="azure-guide__chevron" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+              Azure App Registration — step-by-step
+            </summary>
+            <ol class="azure-guide__steps">
+              <li>Go to <strong>portal.azure.com</strong> and sign in with the Microsoft account you use for Outlook.</li>
+              <li>Search for <strong>Azure Active Directory</strong> (or <em>Microsoft Entra ID</em>) → <strong>App registrations</strong> → <strong>+ New registration</strong>.</li>
+              <li>Name: anything (e.g. <code>job-bot</code>). Supported account types: <em>Single tenant</em> for work/school, <em>Multitenant + personal</em> for @outlook.com / @hotmail.com.</li>
+              <li>Redirect URI platform: <strong>Web</strong>. URI: <code>http://localhost:5000/email/auth/callback</code>. Click <strong>Register</strong>.</li>
+              <li>On the Overview page copy <strong>Application (client) ID</strong> → paste above.</li>
+              <li>Copy <strong>Directory (tenant) ID</strong> → paste above (or use <code>common</code> for personal accounts).</li>
+              <li>Go to <strong>Certificates &amp; secrets</strong> → <strong>+ New client secret</strong>. Set any expiry, click Add, copy the <strong>Value</strong> immediately → paste above as Client Secret.</li>
+              <li>Go to <strong>API permissions</strong> → <strong>+ Add a permission</strong> → Microsoft Graph → Delegated → search <code>Mail.Read</code> → Add.</li>
+              <li>If your org requires it: click <strong>Grant admin consent</strong>. Personal accounts skip this step.</li>
+              <li>Save settings here, then click <strong>Connect Outlook</strong> on the Dashboard.</li>
+            </ol>
+          </details>
+        </div>
+
+      </div>
+    </div>
+
+  </div>{# /stab-browser #}
+
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     TAB 4 — Answers
+     Pre-filled answers for Easy Apply forms
+  ══════════════════════════════════════════════════════════════════════════ #}
+  <div class="stab__panel" id="stab-answers"
+       data-panel="answers" role="tabpanel" aria-labelledby="tab-answers">
+
+    <div class="card stab__card">
+      <div class="card__header">
+        <span class="card__title">Application Answers</span>
+        <span class="card__header-note">Pre-filled answers for common Easy Apply questions</span>
+      </div>
+      <div class="stab__grid">
+
+        <div class="form-group">
+          <label class="form-label">Authorized to work in US?</label>
+          <select class="form-select" name="ans_work_authorization">
+            {% set wa = config.answers.work_authorization if config.answers is defined else 'Yes' %}
+            <option value="Yes" {% if wa == 'Yes' %}selected{% endif %}>Yes</option>
+            <option value="No"  {% if wa == 'No'  %}selected{% endif %}>No</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Requires visa sponsorship?</label>
+          <select class="form-select" name="ans_requires_sponsorship">
+            {% set sp = config.answers.requires_sponsorship if config.answers is defined else 'No' %}
+            <option value="No"  {% if sp == 'No'  %}selected{% endif %}>No</option>
+            <option value="Yes" {% if sp == 'Yes' %}selected{% endif %}>Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Willing to relocate?</label>
+          <select class="form-select" name="ans_willing_to_relocate">
+            {% set wr = config.answers.willing_to_relocate if config.answers is defined else 'No' %}
+            <option value="No"  {% if wr == 'No'  %}selected{% endif %}>No</option>
+            <option value="Yes" {% if wr == 'Yes' %}selected{% endif %}>Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Years of experience</label>
+          <input class="form-input" type="text" name="ans_years_experience"
+                 value="{{ config.answers.years_experience if config.answers is defined else '' }}"
+                 placeholder="e.g. 3" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Desired salary</label>
+          <input class="form-input" type="text" name="ans_desired_salary"
+                 value="{{ config.answers.desired_salary if config.answers is defined else '' }}"
+                 placeholder="e.g. 120000" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Earliest start date</label>
+          <input class="form-input" type="text" name="ans_earliest_start_date"
+                 value="{{ config.answers.earliest_start_date if config.answers is defined else '2 weeks' }}"
+                 placeholder="e.g. 2 weeks" />
+        </div>
+
+        <div class="form-group stab__grid--span">
+          <label class="form-label">
+            Cover letter
+            <span class="form-label__note">pasted into text boxes when one is shown</span>
+          </label>
+          <textarea class="form-input" name="ans_cover_letter" rows="5" style="resize:vertical"
+                    placeholder="Write a short cover letter that will be pasted into text boxes…">{{ config.answers.cover_letter if config.answers is defined else '' }}</textarea>
+        </div>
+
+      </div>
+    </div>
+
+  </div>{# /stab-answers #}
+
+</div>{# /stab #}
+
+<div class="stab__save">
   <button class="btn btn--primary" type="submit">Save settings</button>
+  <span class="stab__save-note">All tabs are saved together</span>
+</div>
 
 </form>
 {% endblock %}

@@ -1862,6 +1862,220 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
   border: 1px solid rgba(124, 104, 245, .25);
 }
 
+/* ─── Settings tabs ──────────────────────────────────────────────────────── */
+.stab { margin-bottom: 1.5rem; }
+
+.stab__nav {
+  display: flex;
+  gap: 3px;
+  padding: .3rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 1.5rem;
+}
+
+.stab__tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .42rem;
+  padding: .58rem .75rem;
+  border-radius: calc(var(--r) - 2px);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-2);
+  font-size: .82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color .13s ease, background .13s ease, border-color .13s ease;
+  white-space: nowrap;
+}
+
+.stab__tab:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.stab__tab--active {
+  background: var(--accent-bg);
+  border-color: rgba(124, 104, 245, .25);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.stab__panel { display: none; }
+
+.stab__panel--active {
+  display: block;
+  animation: stab-in .17s ease both;
+}
+
+@keyframes stab-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stab__panel--active { animation: none; }
+}
+
+/* Card within a panel */
+.stab__card { margin-bottom: 1.25rem; }
+.stab__card:last-child { margin-bottom: 0; }
+
+/* Two-column form grid inside a card */
+.stab__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.stab__grid .form-group { margin: 0; }
+
+/* Full-width cell inside the two-column grid */
+.stab__grid--span { grid-column: 1 / -1; }
+
+/* Single-section padding (non-grid panels) */
+.stab__section {
+  padding: 1.25rem 1.5rem;
+}
+
+/* Save row below the tabs */
+.stab__save {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.stab__save-note {
+  font-size: .75rem;
+  color: var(--text-3);
+}
+
+/* Form helpers */
+.form-label__note {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-2);
+  margin-left: .3rem;
+}
+
+.field-hint {
+  font-size: .74rem;
+  color: var(--text-2);
+  margin-top: .32rem;
+  line-height: 1.5;
+}
+
+.field-hint code {
+  font-family: 'SF Mono', 'Fira Mono', monospace;
+  font-size: .7rem;
+  background: var(--surface-3);
+  border-radius: 3px;
+  padding: .05rem .28rem;
+  color: var(--text);
+}
+
+/* Card header secondary note */
+.card__header-note {
+  font-size: .74rem;
+  font-weight: 400;
+  color: var(--text-2);
+}
+
+/* Checkbox group */
+.check-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem .8rem;
+  margin-top: .38rem;
+}
+
+.check-label {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .875rem;
+  font-weight: 400;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.check-label--lg {
+  font-size: .875rem;
+  font-weight: 500;
+}
+
+.check-input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Azure guide collapsible */
+.azure-guide {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+
+.azure-guide__summary {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .72rem 1rem;
+  cursor: pointer;
+  font-size: .83rem;
+  font-weight: 600;
+  color: var(--text);
+  list-style: none;
+  user-select: none;
+}
+
+.azure-guide__summary::-webkit-details-marker { display: none; }
+
+.azure-guide__chevron {
+  transition: transform .18s ease;
+  flex-shrink: 0;
+  color: var(--text-3);
+}
+
+details[open] .azure-guide__chevron { transform: rotate(90deg); }
+
+.azure-guide__steps {
+  margin: 0;
+  padding: .25rem 1rem 1rem 2.25rem;
+  font-size: .81rem;
+  color: var(--text-2);
+  line-height: 1.9;
+}
+
+.azure-guide__steps strong { color: var(--text); }
+
+.azure-guide__steps code {
+  font-family: 'SF Mono', 'Fira Mono', monospace;
+  font-size: .72rem;
+  background: var(--surface-3);
+  border-radius: 3px;
+  padding: .05rem .28rem;
+  color: var(--text);
+}
+
+@media (max-width: 680px) {
+  .stab__tab span { display: none; }
+  .stab__tab { padding: .58rem; flex: 0 0 auto; }
+  .stab__nav { justify-content: stretch; }
+  .stab__grid { grid-template-columns: 1fr; }
+  .stab__grid--span { grid-column: 1; }
+}
+
 /* ─── Applicant competition meter ────────────────────────────────────────── */
 .comp-meter {
   display: flex;

@@ -897,6 +897,38 @@
   });
 })();
 
+// ── Settings tab switcher ────────────────────────────────────────────────
+(function () {
+  var tabs   = document.querySelectorAll('.stab__tab');
+  var panels = document.querySelectorAll('.stab__panel');
+  if (!tabs.length) return;
+
+  function activate(targetId) {
+    tabs.forEach(function (t) {
+      var on = t.getAttribute('data-tab') === targetId;
+      t.classList.toggle('stab__tab--active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    panels.forEach(function (p) {
+      var on = p.getAttribute('data-panel') === targetId;
+      p.classList.toggle('stab__panel--active', on);
+    });
+    try { localStorage.setItem('settings-tab', targetId); } catch (_) {}
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () { activate(tab.getAttribute('data-tab')); });
+  });
+
+  // Restore last-used tab
+  try {
+    var saved = localStorage.getItem('settings-tab');
+    if (saved && document.querySelector('.stab__tab[data-tab="' + saved + '"]')) {
+      activate(saved);
+    }
+  } catch (_) {}
+})();
+
 // ── Applicant competition meter ───────────────────────────────────────────
 (function () {
   var meter   = document.getElementById('comp-meter');
