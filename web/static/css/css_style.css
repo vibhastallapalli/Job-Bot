@@ -2550,6 +2550,56 @@ body.focus-mode #focus-exit-hint { display: block; }
   #focus-exit-hint { animation: none; }
 }
 
+/* ─── Resume page ────────────────────────────────────────────────────────── */
+.resume-compile {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.1rem 1.5rem 1.4rem;
+}
+
+.resume-compile__desc {
+  flex: 1;
+  margin: 0;
+  color: var(--text-2);
+  font-size: .875rem;
+}
+
+.skills-chart-wrap {
+  padding: 1.1rem 1.5rem 1.5rem;
+  overflow-x: auto;
+}
+
+.skills-chart {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.skill-label {
+  fill: var(--text-2);
+  font-size: 11.5px;
+  font-family: inherit;
+}
+
+.skill-track { fill: var(--border); }
+
+.skill-bar {
+  fill: var(--accent);
+  transition: width .9s cubic-bezier(.16, 1, .3, 1);
+}
+
+.skill-pct {
+  fill: var(--text-3);
+  font-size: 11px;
+  font-family: 'Consolas', monospace;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-bar { transition: none; }
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .stats-grid { grid-template-columns: repeat(3, 1fr); }

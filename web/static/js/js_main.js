@@ -1111,6 +1111,34 @@
   });
 })();
 
+// ── Skills confidence chart ───────────────────────────────────────────────
+(function () {
+  var bars    = document.querySelectorAll('.skill-bar');
+  var chart   = document.getElementById('skills-chart');
+  if (!bars.length || !chart) return;
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function animateBars() {
+    bars.forEach(function (bar) {
+      bar.style.width = bar.dataset.w + 'px';
+    });
+  }
+
+  if (reduced || !('IntersectionObserver' in window)) {
+    animateBars();
+    return;
+  }
+
+  var obs = new IntersectionObserver(function (entries) {
+    if (entries[0].isIntersecting) {
+      setTimeout(animateBars, 80);
+      obs.disconnect();
+    }
+  }, { threshold: 0.25 });
+  obs.observe(chart);
+})();
+
 // ── Logs auto-scroll ──────────────────────────────────────────────────────
 (function () {
   var btn  = document.getElementById('autoscroll-btn');

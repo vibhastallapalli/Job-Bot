@@ -2,12 +2,76 @@
 {% block title %}Resume — job-bot{% endblock %}
 
 {% block content %}
-<h1>Resume</h1>
+<div class="page-header">
+  <h1 class="page-title">Resume</h1>
+  <p class="page-subtitle">PDF compilation and skill snapshot</p>
+</div>
 
-<!-- TODO: render a live HTML preview of the resume data -->
-<!-- TODO: add per-job tailoring controls (highlight skills matching job description) -->
+<div class="card">
+  <div class="card__header">
+    <span class="card__title">Resume PDF</span>
+  </div>
+  <div class="resume-compile">
+    <p class="resume-compile__desc">Generate a tailored PDF from your resume data and current settings.</p>
+    <form method="POST" action="{{ url_for('main.compile_resume') }}">
+      <button type="submit" class="btn btn--primary btn--sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Compile PDF
+      </button>
+    </form>
+  </div>
+</div>
 
-<form method="POST" action="{{ url_for('main.compile_resume') }}">
-  <button type="submit">Compile PDF</button>
-</form>
+<div class="card">
+  <div class="card__header">
+    <span class="card__title">Skills Confidence</span>
+    <span class="card__header-note">Self-assessed proficiency &middot; mechanical &amp; mechatronics</span>
+  </div>
+  <div class="skills-chart-wrap">
+    <svg id="skills-chart" class="skills-chart" viewBox="0 0 520 216"
+         aria-label="Skills confidence chart" role="img">
+      <title>Horizontal bar chart showing proficiency in 6 key mechanical and mechatronics skills</title>
+
+      <!-- Row 0: SolidWorks / CAD — 88% (253 / 288) -->
+      <text class="skill-label" x="150" y="17" text-anchor="end" dominant-baseline="middle">SolidWorks / CAD</text>
+      <rect class="skill-track" x="160" y="11" width="288" height="12" rx="6"/>
+      <rect class="skill-bar" x="160" y="11" width="0" data-w="253" height="12" rx="6"/>
+      <text class="skill-pct" x="458" y="17" dominant-baseline="middle">88%</text>
+
+      <!-- Row 1: ANSYS Simulation — 76% (219 / 288) -->
+      <text class="skill-label" x="150" y="51" text-anchor="end" dominant-baseline="middle">ANSYS Simulation</text>
+      <rect class="skill-track" x="160" y="45" width="288" height="12" rx="6"/>
+      <rect class="skill-bar" x="160" y="45" width="0" data-w="219" height="12" rx="6"/>
+      <text class="skill-pct" x="458" y="51" dominant-baseline="middle">76%</text>
+
+      <!-- Row 2: Embedded Systems — 84% (242 / 288) -->
+      <text class="skill-label" x="150" y="85" text-anchor="end" dominant-baseline="middle">Embedded Systems</text>
+      <rect class="skill-track" x="160" y="79" width="288" height="12" rx="6"/>
+      <rect class="skill-bar" x="160" y="79" width="0" data-w="242" height="12" rx="6"/>
+      <text class="skill-pct" x="458" y="85" dominant-baseline="middle">84%</text>
+
+      <!-- Row 3: Python & Scripting — 72% (207 / 288) -->
+      <text class="skill-label" x="150" y="119" text-anchor="end" dominant-baseline="middle">Python &amp; Scripting</text>
+      <rect class="skill-track" x="160" y="113" width="288" height="12" rx="6"/>
+      <rect class="skill-bar" x="160" y="113" width="0" data-w="207" height="12" rx="6"/>
+      <text class="skill-pct" x="458" y="119" dominant-baseline="middle">72%</text>
+
+      <!-- Row 4: GD&T & DFM — 70% (202 / 288) -->
+      <text class="skill-label" x="150" y="153" text-anchor="end" dominant-baseline="middle">GD&amp;T &amp; DFM</text>
+      <rect class="skill-track" x="160" y="147" width="288" height="12" rx="6"/>
+      <rect class="skill-bar" x="160" y="147" width="0" data-w="202" height="12" rx="6"/>
+      <text class="skill-pct" x="458" y="153" dominant-baseline="middle">70%</text>
+
+      <!-- Row 5: Control Systems — 65% (187 / 288) -->
+      <text class="skill-label" x="150" y="187" text-anchor="end" dominant-baseline="middle">Control Systems</text>
+      <rect class="skill-track" x="160" y="181" width="288" height="12" rx="6"/>
+      <rect class="skill-bar" x="160" y="181" width="0" data-w="187" height="12" rx="6"/>
+      <text class="skill-pct" x="458" y="187" dominant-baseline="middle">65%</text>
+    </svg>
+  </div>
+</div>
 {% endblock %}
