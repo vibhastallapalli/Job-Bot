@@ -720,6 +720,30 @@ tbody tr:hover td { background: rgba(255,255,255,.022); }
 .log-time   { color: var(--text-3); font-size: .78rem; font-family: 'Consolas', monospace; white-space: nowrap; }
 .log-module { color: var(--text-2); font-size: .8rem; font-family: 'Consolas', monospace; }
 
+.log-row td:first-child { border-left: 3px solid transparent; padding-left: .85rem; }
+.log-row--info    td:first-child { border-left-color: var(--c-blue); }
+.log-row--warning td:first-child { border-left-color: var(--c-amber); }
+.log-row--error   td:first-child { border-left-color: var(--c-red); }
+
+.log-row--warning { background: rgba(251, 191, 36, .045); }
+.log-row--error   { background: rgba(239, 68, 68, .055); }
+
+.logs-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: .6rem 1.25rem .25rem;
+  gap: .5rem;
+}
+
+.autoscroll-btn { display: inline-flex; align-items: center; gap: .38rem; }
+.autoscroll-btn[aria-pressed="true"] {
+  background: var(--accent-bg);
+  border-color: rgba(124, 104, 245, .3);
+  color: var(--accent);
+}
+.autoscroll-btn[aria-pressed="true"] svg { stroke: var(--accent); }
+
 /* ─── Detail page ────────────────────────────────────────────────────────── */
 .detail-meta {
   display: grid;

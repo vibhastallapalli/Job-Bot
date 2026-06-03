@@ -1111,6 +1111,48 @@
   });
 })();
 
+// ── Logs auto-scroll ──────────────────────────────────────────────────────
+(function () {
+  var btn  = document.getElementById('autoscroll-btn');
+  var wrap = document.getElementById('logs-table-wrap');
+  if (!btn || !wrap) return;
+
+  var enabled = false;
+  var rafId   = null;
+
+  function scrollToBottom() {
+    wrap.scrollTop = wrap.scrollHeight;
+  }
+
+  function tick() {
+    if (!enabled) return;
+    scrollToBottom();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function setEnabled(on) {
+    enabled = on;
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (on) {
+      scrollToBottom();
+      rafId = requestAnimationFrame(tick);
+    } else {
+      if (rafId) cancelAnimationFrame(rafId);
+    }
+  }
+
+  btn.addEventListener('click', function () {
+    setEnabled(btn.getAttribute('aria-pressed') !== 'true');
+  });
+
+  // Stop auto-scroll if the user manually scrolls up
+  wrap.addEventListener('scroll', function () {
+    if (!enabled) return;
+    var atBottom = wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight < 8;
+    if (!atBottom) setEnabled(false);
+  }, { passive: true });
+})();
+
 // ── Live stats bubble ──────────────────────────────────────────────────────
 (function () {
   var toggle   = document.getElementById('lsb-toggle');
