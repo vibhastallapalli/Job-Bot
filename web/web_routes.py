@@ -46,6 +46,11 @@ def dashboard():
         _j["score"] = _calc_match_score(_j.get("title", ""), _j.get("description", ""), _kws)
         recent_jobs.append(_j)
     recent_logs = db.execute("SELECT * FROM logs ORDER BY created_at DESC LIMIT 6").fetchall()
+    scrape_history = db.execute(
+        "SELECT level, module, message, created_at FROM logs "
+        "WHERE module = 'scraper' "
+        "ORDER BY created_at DESC LIMIT 10"
+    ).fetchall()
 
     from modules.email.email_outlook import TOKEN_CACHE_PATH
     outlook_connected = os.path.exists(TOKEN_CACHE_PATH)
@@ -63,6 +68,7 @@ def dashboard():
         stats=stats,
         recent_jobs=recent_jobs,
         recent_logs=recent_logs,
+        scrape_history=scrape_history,
         outlook_connected=outlook_connected,
         cutoff_24h=cutoff_24h,
         applied_today=applied_today,
