@@ -1246,3 +1246,89 @@
   loadStats();
   setInterval(loadStats, 60000);
 })();
+
+// ── Bulk action toolbar ────────────────────────────────────────────────────
+(function () {
+  var toolbar     = document.getElementById('bulk-toolbar');
+  var countEl     = document.getElementById('bulk-count');
+  var clearBtn    = document.getElementById('bulk-clear');
+  var appliedBtn  = document.getElementById('bulk-applied');
+  var ignoredBtn  = document.getElementById('bulk-ignored');
+  var deleteBtn   = document.getElementById('bulk-delete');
+  var statusForm  = document.getElementById('bulk-status-form');
+  var deleteForm  = document.getElementById('bulk-delete-form');
+  if (!toolbar || !statusForm || !deleteForm) return;
+
+  function getChecked() {
+    return Array.from(document.querySelectorAll('.job-check:checked')).map(function (cb) { return cb.value; });
+  }
+
+  function sync() {
+    var ids = getChecked();
+    var n   = ids.length;
+    if (countEl) countEl.textContent = n;
+    toolbar.classList.toggle('bulk-toolbar--visible', n > 0);
+    toolbar.setAttribute('aria-hidden', n > 0 ? 'false' : 'true');
+  }
+
+  function injectIds(form, ids) {
+    Array.from(form.querySelectorAll('input[name="job_ids"]')).forEach(function (el) { el.remove(); });
+    ids.forEach(function (id) {
+      var inp = document.createElement('input');
+      inp.type  = 'hidden';
+      inp.name  = 'job_ids';
+      inp.value = id;
+      form.appendChild(inp);
+    });
+  }
+
+  function getOrCreate(form, name) {
+    var el = form.querySelector('input[name="' + name + '"]');
+    if (!el) {
+      el = document.createElement('input');
+      el.type = 'hidden';
+      el.name = name;
+      form.appendChild(el);
+    }
+    return el;
+  }
+
+  function submitStatus(status) {
+    var ids = getChecked();
+    if (!ids.length) return;
+    injectIds(statusForm, ids);
+    getOrCreate(statusForm, 'status').value = status;
+    statusForm.submit();
+  }
+
+  function clearAll() {
+    document.querySelectorAll('.job-check').forEach(function (cb) { cb.checked = false; });
+    var allCb = document.getElementById('check-all');
+    if (allCb) allCb.checked = false;
+    var queueBtn   = document.getElementById('queue-btn');
+    var queueCount = document.getElementById('queue-count');
+    if (queueBtn)   { queueBtn.disabled = true; }
+    if (queueCount) { queueCount.textContent = '0'; }
+    sync();
+  }
+
+  if (appliedBtn) appliedBtn.addEventListener('click', function () { submitStatus('applied'); });
+  if (ignoredBtn) ignoredBtn.addEventListener('click', function () { submitStatus('ignored'); });
+  if (clearBtn)   clearBtn.addEventListener('click', clearAll);
+
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', function () {
+      var ids = getChecked();
+      if (!ids.length) return;
+      if (!confirm('Permanently delete ' + ids.length + ' job(s)? This cannot be undone.')) return;
+      injectIds(deleteForm, ids);
+      deleteForm.submit();
+    });
+  }
+
+  document.addEventListener('change', function (e) {
+    if (e.target && (e.target.classList.contains('job-check') || e.target.id === 'check-all')) {
+      sync();
+    }
+  });
+})();

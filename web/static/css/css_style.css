@@ -2953,6 +2953,101 @@ body.focus-mode #focus-exit-hint { display: block; }
   .skill-bar { transition: none; }
 }
 
+/* ─── Bulk action toolbar ────────────────────────────────────────────────── */
+.bulk-toolbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 150;
+  transform: translateY(100%);
+  transition: transform .25s cubic-bezier(.16, 1, .3, 1);
+  pointer-events: none;
+}
+
+.bulk-toolbar--visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.bulk-toolbar__inner {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .85rem 1.75rem;
+  background: var(--surface);
+  border-top: 1px solid var(--border-2);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, .35);
+}
+
+.bulk-toolbar__info {
+  font-size: .84rem;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.bulk-toolbar__info strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.bulk-toolbar__sep {
+  width: 1px;
+  height: 1.4rem;
+  background: var(--border-2);
+  flex-shrink: 0;
+}
+
+.bulk-toolbar__btns {
+  display: flex;
+  gap: .45rem;
+  align-items: center;
+}
+
+.bulk-toolbar__btns .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+.btn--success {
+  background: var(--c-green);
+  color: #fff;
+  border-color: transparent;
+}
+.btn--success:hover { filter: brightness(1.12); }
+
+.btn--danger {
+  background: var(--c-red);
+  color: #fff;
+  border-color: transparent;
+}
+.btn--danger:hover { filter: brightness(1.12); }
+
+.bulk-toolbar__clear {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  border: 1px solid var(--border-2);
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background .15s, color .15s;
+}
+.bulk-toolbar__clear:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bulk-toolbar { transition: none; }
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .stats-grid { grid-template-columns: repeat(3, 1fr); }

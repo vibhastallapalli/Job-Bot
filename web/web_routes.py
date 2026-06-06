@@ -293,6 +293,66 @@ def queue_stats():
     })
 
 
+# ── Bulk actions ───────────────────────────────────────────────────────────
+
+@main_bp.route("/jobs/bulk/status", methods=["POST"])
+def bulk_status():
+    status = request.form.get("status", "")
+    if status not in _VALID_STATUSES:
+        flash("Invalid status.", "error")
+        return redirect(url_for("main.jobs"))
+    job_ids = request.form.getlist("job_ids")
+    if not job_ids:
+        flash("No jobs selected.", "warning")
+        return redirect(url_for("main.jobs"))
+    db = get_db()
+    updated = 0
+    for raw_id in job_ids:
+        try:
+            job_id = int(raw_id)
+        except ValueError:
+            continue
+        db.execute(
+            "UPDATE jobs SET status=?, updated_at=CURRENT_TIMESTAMP WHERE id=?",
+            (status, job_id),
+        )
+        updated += 1
+    db.commit()
+    db.execute(
+        "INSERT INTO logs (level, module, message) VALUES ('INFO', 'bulk', ?)",
+        (f"Bulk status update: {updated} jobs set to '{status}'",),
+    )
+    db.commit()
+    flash(f"{updated} job(s) marked as {status}.", "success")
+    return redirect(url_for("main.jobs"))
+
+
+@main_bp.route("/jobs/bulk/delete", methods=["POST"])
+def bulk_delete():
+    job_ids = request.form.getlist("job_ids")
+    if not job_ids:
+        flash("No jobs selected.", "warning")
+        return redirect(url_for("main.jobs"))
+    db = get_db()
+    deleted = 0
+    for raw_id in job_ids:
+        try:
+            job_id = int(raw_id)
+        except ValueError:
+            continue
+        db.execute("DELETE FROM applications WHERE job_id=?", (job_id,))
+        db.execute("DELETE FROM jobs WHERE id=?", (job_id,))
+        deleted += 1
+    db.commit()
+    db.execute(
+        "INSERT INTO logs (level, module, message) VALUES ('WARNING', 'bulk', ?)",
+        (f"Bulk delete: {deleted} jobs removed",),
+    )
+    db.commit()
+    flash(f"{deleted} job(s) deleted.", "success")
+    return redirect(url_for("main.jobs"))
+
+
 # ── Job detail ─────────────────────────────────────────────────────────────
 
 @main_bp.route("/jobs/<int:job_id>")
