@@ -1,19 +1,18 @@
-// ── Command palette ───────────────────────────────────────────────────────
+// ── Nav inline search ─────────────────────────────────────────────────────
 (function () {
-  var overlay  = document.getElementById('palette-overlay');
-  var input    = document.getElementById('palette-input');
-  var list     = document.getElementById('palette-results');
-  var emptyEl  = document.getElementById('palette-empty');
-  var trigger  = document.getElementById('palette-trigger');
-  var hint     = document.getElementById('palette-shortcut-hint');
-  if (!overlay || !input || !list) return;
+  var container = document.getElementById('nav-search');
+  var trigger   = document.getElementById('nav-search-trigger');
+  var field     = document.getElementById('nav-search-field');
+  var input     = document.getElementById('nav-search-input');
+  var dropdown  = document.getElementById('nav-search-dropdown');
+  var hint      = document.getElementById('nav-search-hint');
+  if (!container || !trigger || !input || !dropdown) return;
 
   var activeIdx = -1;
   var results   = [];
   var debounceT = null;
   var reduced   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Show ⌘K on Mac, Ctrl K everywhere else
   if (hint && /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent)) {
     hint.textContent = '⌘K';
   }
@@ -25,74 +24,102 @@
   }
 
   function open() {
-    overlay.classList.add('open');
-    overlay.setAttribute('aria-hidden', 'false');
+    container.classList.add('nav-search--open');
+    trigger.setAttribute('aria-expanded', 'true');
+    if (field) field.setAttribute('aria-hidden', 'false');
+    input.setAttribute('aria-expanded', 'true');
     input.focus();
-    input.select();
-    fetch('/jobs/search?q=' + encodeURIComponent(input.value.trim()))
-      .then(function (r) { return r.json(); })
-      .then(renderResults)
-      .catch(function () {});
+    fetchAndRender(input.value.trim());
   }
 
   function close() {
-    overlay.classList.remove('open');
-    overlay.setAttribute('aria-hidden', 'true');
+    container.classList.remove('nav-search--open');
+    trigger.setAttribute('aria-expanded', 'false');
+    if (field) field.setAttribute('aria-hidden', 'true');
+    input.setAttribute('aria-expanded', 'false');
+    dropdown.hidden = true;
+    dropdown.innerHTML = '';
     input.value = '';
-    wipeResults();
-  }
-
-  function wipeResults() {
-    list.innerHTML = '';
     activeIdx = -1;
     results   = [];
-    if (emptyEl) emptyEl.hidden = true;
+  }
+
+  function fetchAndRender(q) {
+    fetch('/jobs/search?q=' + encodeURIComponent(q))
+      .then(function (r) { return r.json(); })
+      .then(renderDropdown)
+      .catch(function () {});
   }
 
   function setActive(idx) {
-    var items = list.querySelectorAll('.palette__result');
+    var items = dropdown.querySelectorAll('.nav-search__item');
     if (!items.length) return;
     idx = Math.max(0, Math.min(idx, items.length - 1));
     items.forEach(function (el, i) {
-      el.classList.toggle('palette__result--active', i === idx);
+      el.classList.toggle('nav-search__item--active', i === idx);
     });
     if (items[idx]) items[idx].scrollIntoView({ block: 'nearest' });
     activeIdx = idx;
   }
 
-  function renderResults(data) {
-    wipeResults();
-    results = data;
+  function renderDropdown(data) {
+    dropdown.innerHTML = '';
+    activeIdx = -1;
+    results   = data;
+
     if (!data.length) {
-      if (emptyEl) emptyEl.hidden = false;
+      var empty = document.createElement('li');
+      empty.className   = 'nav-search__empty';
+      empty.textContent = 'No jobs match your search.';
+      dropdown.appendChild(empty);
+      dropdown.hidden = false;
       return;
     }
+
+    var frag = document.createDocumentFragment();
+
     data.forEach(function (job, i) {
       var li = document.createElement('li');
-      li.className  = 'palette__result';
+      li.className = 'nav-search__item';
       li.setAttribute('role', 'option');
       li.innerHTML =
-        '<div class="palette__job-icon">' +
-          '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"' +
-              ' fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<div class="nav-search__item-icon">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"' +
+              ' fill="none" stroke="currentColor" stroke-width="2"' +
+              ' stroke-linecap="round" stroke-linejoin="round">' +
             '<rect x="2" y="7" width="20" height="14" rx="2"/>' +
             '<path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>' +
           '</svg>' +
         '</div>' +
-        '<div class="palette__meta">' +
-          '<div class="palette__title">' + esc(job.title) + '</div>' +
-          (job.company ? '<div class="palette__company">' + esc(job.company) + '</div>' : '') +
+        '<div class="nav-search__item-meta">' +
+          '<div class="nav-search__item-title">' + esc(job.title) + '</div>' +
+          (job.company ? '<div class="nav-search__item-company">' + esc(job.company) + '</div>' : '') +
         '</div>' +
-        '<span class="palette__status palette__status--' + esc(job.status) + '">' + esc(job.status) + '</span>';
+        '<span class="nav-search__item-status nav-search__item-status--' + esc(job.status) + '">' +
+          esc(job.status) +
+        '</span>';
       li.addEventListener('click', function () { navigate(i); });
       li.addEventListener('mouseenter', function () {
-        var items = list.querySelectorAll('.palette__result');
-        items.forEach(function (el) { el.classList.remove('palette__result--active'); });
-        li.classList.add('palette__result--active');
+        dropdown.querySelectorAll('.nav-search__item').forEach(function (el) {
+          el.classList.remove('nav-search__item--active');
+        });
+        li.classList.add('nav-search__item--active');
         activeIdx = i;
       });
-      list.appendChild(li);
+      frag.appendChild(li);
     });
+
+    var footer = document.createElement('li');
+    footer.className = 'nav-search__footer';
+    footer.setAttribute('aria-hidden', 'true');
+    footer.innerHTML =
+      '<span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>' +
+      '<span><kbd>↵</kbd> open</span>' +
+      '<span><kbd>Esc</kbd> close</span>';
+    frag.appendChild(footer);
+
+    dropdown.appendChild(frag);
+    dropdown.hidden = false;
   }
 
   function navigate(idx) {
@@ -109,37 +136,36 @@
     }
   }
 
+  trigger.addEventListener('click', open);
+
+  // Clicking the Esc hint closes the search
+  var escHint = document.querySelector('.nav-search__esc-hint');
+  if (escHint) escHint.addEventListener('click', close);
+
   input.addEventListener('input', function () {
     clearTimeout(debounceT);
     debounceT = setTimeout(function () {
-      fetch('/jobs/search?q=' + encodeURIComponent(input.value.trim()))
-        .then(function (r) { return r.json(); })
-        .then(renderResults)
-        .catch(function () {});
+      fetchAndRender(input.value.trim());
     }, 160);
   });
 
-  overlay.addEventListener('mousedown', function (e) {
-    if (e.target === overlay) close();
+  // Close on outside click
+  document.addEventListener('mousedown', function (e) {
+    if (container.classList.contains('nav-search--open') && !container.contains(e.target)) {
+      close();
+    }
   });
-
-  if (trigger) trigger.addEventListener('click', open);
-  if (emptyEl) {
-    // clicking Esc hint also closes
-    var escHint = document.querySelector('.palette__esc-hint');
-    if (escHint) escHint.addEventListener('click', close);
-  }
 
   document.addEventListener('keydown', function (e) {
     var mod = e.ctrlKey || e.metaKey;
 
     if (mod && e.key === 'k') {
       e.preventDefault();
-      overlay.classList.contains('open') ? close() : open();
+      container.classList.contains('nav-search--open') ? close() : open();
       return;
     }
 
-    if (!overlay.classList.contains('open')) return;
+    if (!container.classList.contains('nav-search--open')) return;
 
     switch (e.key) {
       case 'Escape':
