@@ -141,6 +141,7 @@
           <th>Location</th>
           <th>Source</th>
           <th>Status</th>
+          <th style="text-align:center">Match</th>
           <th>Discovered</th>
         </tr>
       </thead>
@@ -152,11 +153,15 @@
           <td class="td-muted">{{ job.location }}</td>
           <td><span class="source-tag">{{ job.source }}</span></td>
           <td><span class="badge badge--{{ job.status }}">{{ job.status }}</span></td>
+          <td style="text-align:center">
+            {%- set _t = 'green' if job.score >= 70 else ('yellow' if job.score >= 40 else 'red') -%}
+            <span class="match-score match-score--{{ _t }}" title="{{ job.score }}% keyword match">{{ job.score }}</span>
+          </td>
           <td class="td-muted">{{ job.discovered_at | fmtdt }}</td>
         </tr>
         {% else %}
         <tr>
-          <td colspan="6" style="padding:2rem;text-align:center;color:var(--text-2)">No jobs found.</td>
+          <td colspan="7" style="padding:2rem;text-align:center;color:var(--text-2)">No jobs found.</td>
         </tr>
         {% endfor %}
       </tbody>

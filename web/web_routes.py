@@ -14,6 +14,14 @@ _VALID_STATUSES    = {"discovered", "applied", "interview", "offer", "rejected",
 _SCRAPE_IN_PROGRESS = False   # guarded by GIL; single scrape at a time
 
 
+def _calc_match_score(title: str, description: str, keywords: list) -> int:
+    if not keywords:
+        return 0
+    text = ((title or "") + " " + (description or "")).lower()
+    matched = sum(1 for kw in keywords if kw.lower() in text)
+    return round(matched / len(keywords) * 100)
+
+
 # ── Dashboard ──────────────────────────────────────────────────────────────
 
 @main_bp.route("/")
@@ -30,7 +38,13 @@ def dashboard():
         "rejected":     db.execute("SELECT COUNT(*) FROM jobs WHERE status='rejected'").fetchone()[0],
         "success_rate": round((interviews + offers) / applied * 100) if applied else 0,
     }
-    recent_jobs = db.execute("SELECT * FROM jobs ORDER BY discovered_at DESC LIMIT 8").fetchall()
+    recent_job_rows = db.execute("SELECT * FROM jobs ORDER BY discovered_at DESC LIMIT 8").fetchall()
+    _kws = current_app.config["JOB_BOT"].get("job_search", {}).get("keywords", [])
+    recent_jobs = []
+    for _row in recent_job_rows:
+        _j = dict(_row)
+        _j["score"] = _calc_match_score(_j.get("title", ""), _j.get("description", ""), _kws)
+        recent_jobs.append(_j)
     recent_logs = db.execute("SELECT * FROM logs ORDER BY created_at DESC LIMIT 6").fetchall()
 
     from modules.email.email_outlook import TOKEN_CACHE_PATH
@@ -93,13 +107,22 @@ def jobs():
     easy_apply_count = db.execute("SELECT COUNT(*) FROM jobs WHERE easy_apply=1").fetchone()[0]
     cutoff_24h = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S")
 
+    keywords = current_app.config["JOB_BOT"].get("job_search", {}).get("keywords", [])
+    jobs = []
+    for row in job_rows:
+        j = dict(row)
+        j["score"] = _calc_match_score(j.get("title", ""), j.get("description", ""), keywords)
+        jobs.append(j)
+
     all_jobs_kb = db.execute("SELECT * FROM jobs ORDER BY discovered_at DESC").fetchall()
     kanban_cols = {"discovered": [], "applied": [], "interview": [], "offer": []}
-    for j in all_jobs_kb:
+    for row in all_jobs_kb:
+        j = dict(row)
+        j["score"] = _calc_match_score(j.get("title", ""), j.get("description", ""), keywords)
         if j["status"] in kanban_cols:
             kanban_cols[j["status"]].append(j)
 
-    return render_template("templates_jobs.html", jobs=job_rows, status=status_filter,
+    return render_template("templates_jobs.html", jobs=jobs, status=status_filter,
                            counts=counts, heatmap=heatmap, cutoff_24h=cutoff_24h,
                            easy_apply_count=easy_apply_count, kanban_cols=kanban_cols)
 
@@ -302,7 +325,11 @@ def job_detail(job_id):
     for i, step in enumerate(timeline):
         step["current"] = (i == last_done)
 
-    return render_template("templates_job_detail.html", job=job, timeline=timeline)
+    _kws = current_app.config["JOB_BOT"].get("job_search", {}).get("keywords", [])
+    match_score = _calc_match_score(job["title"], job["description"], _kws)
+
+    return render_template("templates_job_detail.html", job=job, timeline=timeline,
+                           match_score=match_score)
 
 
 @main_bp.route("/jobs/<int:job_id>/status", methods=["POST"])

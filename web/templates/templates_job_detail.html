@@ -13,6 +13,13 @@
 
   <div class="detail-meta">
     <div>
+      <div class="meta-label">Match Score</div>
+      <div class="meta-value">
+        {%- set _t = 'green' if match_score >= 70 else ('yellow' if match_score >= 40 else 'red') -%}
+        <span class="match-score match-score--lg match-score--{{ _t }}" title="{{ match_score }}% keyword match">{{ match_score }}</span>
+      </div>
+    </div>
+    <div>
       <div class="meta-label">Status</div>
       <div class="meta-value">
         <span class="badge badge--{{ job.status }}">{{ job.status }}</span>

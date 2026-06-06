@@ -400,6 +400,30 @@ tbody tr:hover td { background: rgba(255,255,255,.022); }
 .badge--success { background: var(--c-green-bg); color: var(--c-green); }
 .badge--debug   { background: var(--c-gray-bg);  color: var(--text-3); }
 
+/* ─── Match score badge ───────────────────────────────────────────────────── */
+.match-score {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  font-size: .68rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  cursor: default;
+  transition: transform .15s ease;
+  border: 2px solid transparent;
+  line-height: 1;
+  vertical-align: middle;
+}
+.match-score:hover { transform: scale(1.12); }
+.match-score--green  { background: var(--c-green-bg);  color: var(--c-green);  border-color: rgba(52, 211, 153, .4); }
+.match-score--yellow { background: var(--c-amber-bg);  color: var(--c-amber);  border-color: rgba(251, 191, 36, .4); }
+.match-score--red    { background: var(--c-red-bg);    color: var(--c-red);    border-color: rgba(248, 113, 113, .4); }
+.match-score--sm { width: 1.7rem; height: 1.7rem; font-size: .6rem; border-width: 1.5px; }
+.match-score--lg { width: 2.8rem; height: 2.8rem; font-size: .85rem; border-width: 2.5px; font-weight: 800; }
+
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
 .btn {
   display: inline-flex;
