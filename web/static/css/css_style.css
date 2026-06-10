@@ -2006,6 +2006,30 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
   line-height: 1.5;
 }
 
+/* ─── Jobs visible counter pill ─────────────────────────────────────────── */
+.jobs-vis-counter {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 120;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 999px;
+  padding: .4rem .9rem;
+  font-size: .78rem;
+  color: var(--text-2);
+  box-shadow: 0 2px 12px rgba(0,0,0,.28);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .2s, transform .2s;
+}
+.jobs-vis-counter--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.jobs-vis-counter strong { color: var(--text); font-weight: 600; }
+
 /* ─── Jobs sticky summary bar ────────────────────────────────────────────── */
 .jobs-sticky-bar {
   position: fixed;

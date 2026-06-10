@@ -309,6 +309,28 @@
   input.addEventListener('input', filter);
 })();
 
+// ── Floating visible-job counter ─────────────────────────────────────────
+(function () {
+  var pill  = document.getElementById('jobs-vis-counter');
+  var input = document.getElementById('job-filter');
+  var tbody = document.querySelector('.real-tbody');
+  if (!pill || !tbody) return;
+
+  var jobRows = Array.from(tbody.querySelectorAll('tr')).filter(function (r) {
+    return r.querySelector('.job-check');
+  });
+  var total = jobRows.length;
+
+  function update() {
+    var visible = jobRows.filter(function (r) { return r.style.display !== 'none'; }).length;
+    pill.innerHTML = '<strong>' + visible + '</strong> of ' + total + ' jobs';
+    pill.classList.toggle('jobs-vis-counter--visible', total > 0);
+  }
+
+  if (input) input.addEventListener('input', function () { setTimeout(update, 0); });
+  update();
+})();
+
 // ── Back to top ───────────────────────────────────────────────────────────
 (function () {
   var btn = document.getElementById('back-to-top');
