@@ -1332,3 +1332,41 @@
     }
   });
 })();
+
+// ── Last-scrape live counter ────────────────────────────────────────────────
+(function () {
+  var el = document.getElementById('last-scrape-counter');
+  if (!el) return;
+
+  var lastTs = null;
+
+  function fmtAgo(secs) {
+    if (secs < 60) return secs + 's ago';
+    var m = Math.floor(secs / 60);
+    var s = secs % 60;
+    if (m < 60) return m + 'm ' + s + 's ago';
+    var h = Math.floor(m / 60);
+    var rm = m % 60;
+    return h + 'h ' + rm + 'm ago';
+  }
+
+  function tick() {
+    if (lastTs === null) { el.textContent = ''; return; }
+    var secs = Math.floor((Date.now() - lastTs) / 1000);
+    el.textContent = 'Last scrape: ' + fmtAgo(Math.max(0, secs));
+  }
+
+  function fetchTs() {
+    fetch('/api/last-scrape')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        lastTs = d.ts ? new Date(d.ts.replace(' ', 'T') + 'Z').getTime() : null;
+      })
+      .catch(function () {});
+  }
+
+  fetchTs();
+  setInterval(fetchTs, 60000);
+  setInterval(tick, 1000);
+  tick();
+})();

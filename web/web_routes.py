@@ -744,6 +744,15 @@ def _email_sync_worker(config: dict) -> None:
 
 # ── Live stats API ─────────────────────────────────────────────────────────
 
+@main_bp.route("/api/last-scrape")
+def api_last_scrape():
+    db = get_db()
+    row = db.execute(
+        "SELECT created_at FROM logs WHERE module='scraper' ORDER BY created_at DESC LIMIT 1"
+    ).fetchone()
+    return jsonify({"ts": str(row["created_at"]) if row else None})
+
+
 @main_bp.route("/api/stats")
 def api_stats():
     db = get_db()
