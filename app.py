@@ -105,6 +105,7 @@ def _queue_tick(app):
 
 def _start_scheduler(app):
     from apscheduler.schedulers.background import BackgroundScheduler
+    import web.web_routes as _routes
 
     scheduler = BackgroundScheduler()
     # Fire every ~6.5 min ±2.5 min, giving a 4–9 min random window
@@ -115,6 +116,7 @@ def _start_scheduler(app):
         jitter=150,
     )
     scheduler.start()
+    _routes._SCHEDULER_ACTIVE = True
     atexit.register(scheduler.shutdown)
     return scheduler
 

@@ -53,7 +53,20 @@
 <div class="card scrape-tl">
   <div class="card__header">
     <span class="card__title">Scrape History</span>
-    <a href="{{ url_for('main.logs') }}" class="btn btn--ghost btn--sm">All logs →</a>
+    <div style="display:flex;align-items:center;gap:.75rem">
+      {% if scheduler_running %}
+      <span class="sched-badge sched-badge--active" aria-label="Scheduler is active">
+        <span class="sched-badge__dot" aria-hidden="true"></span>
+        Scheduler Active
+      </span>
+      {% else %}
+      <span class="sched-badge sched-badge--idle" aria-label="Scheduler is idle">
+        <span class="sched-badge__dot" aria-hidden="true"></span>
+        Scheduler Idle
+      </span>
+      {% endif %}
+      <a href="{{ url_for('main.logs') }}" class="btn btn--ghost btn--sm">All logs →</a>
+    </div>
   </div>
   {% if scrape_history %}
   <ol class="scrape-tl__list">

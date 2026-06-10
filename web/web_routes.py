@@ -12,6 +12,7 @@ main_bp = Blueprint("main", __name__)
 
 _VALID_STATUSES    = {"discovered", "applied", "interview", "offer", "rejected", "ignored", "queued"}
 _SCRAPE_IN_PROGRESS = False   # guarded by GIL; single scrape at a time
+_SCHEDULER_ACTIVE   = False   # set to True once APScheduler is started
 
 
 def _calc_match_score(title: str, description: str, keywords: list) -> int:
@@ -74,6 +75,7 @@ def dashboard():
         applied_today=applied_today,
         daily_goal=daily_goal,
         goal_pct=goal_pct,
+        scheduler_running=_SCHEDULER_ACTIVE,
     )
 
 

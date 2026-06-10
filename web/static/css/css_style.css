@@ -1908,6 +1908,43 @@ body:has(.shortcut-bar) #back-to-top { bottom: calc(2.25rem + 1rem); }
   .timeline__ts { display: none; }
 }
 
+/* ─── Scheduler status badge ─────────────────────────────────────────────── */
+.sched-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  font-size: .75rem;
+  font-weight: 600;
+  padding: .25rem .65rem;
+  border-radius: 999px;
+}
+.sched-badge__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sched-badge--active {
+  color: var(--c-green);
+  background: var(--c-green-bg);
+}
+.sched-badge--active .sched-badge__dot {
+  background: var(--c-green);
+  box-shadow: 0 0 0 0 rgba(52, 211, 153, .6);
+  animation: sched-pulse 1.8s ease-in-out infinite;
+}
+.sched-badge--idle {
+  color: var(--text-3);
+  background: var(--c-gray-bg);
+}
+.sched-badge--idle .sched-badge__dot { background: var(--text-3); }
+
+@keyframes sched-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(52, 211, 153, .55); }
+  60%  { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+}
+
 /* ─── Dashboard scrape history timeline ──────────────────────────────────── */
 .scrape-tl__list {
   list-style: none;
