@@ -1355,6 +1355,27 @@
   });
 })();
 
+// ── Activity ticker ───────────────────────────────────────────────────────
+(function () {
+  var track = document.getElementById('activity-ticker-track');
+  if (!track) return;
+
+  fetch('/api/recent-applications')
+    .then(function (r) { return r.json(); })
+    .then(function (items) {
+      if (!items.length) return;
+      document.body.classList.add('ticker-active');
+      var doubled = items.concat(items);
+      doubled.forEach(function (item) {
+        var span = document.createElement('span');
+        span.className = 'activity-ticker__item';
+        span.textContent = item.label;
+        track.appendChild(span);
+      });
+    })
+    .catch(function () {});
+})();
+
 // ── Last-scrape live counter ────────────────────────────────────────────────
 (function () {
   var el = document.getElementById('last-scrape-counter');

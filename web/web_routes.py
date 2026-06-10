@@ -748,6 +748,40 @@ def _email_sync_worker(config: dict) -> None:
 
 # ── Live stats API ─────────────────────────────────────────────────────────
 
+@main_bp.route("/api/recent-applications")
+def api_recent_applications():
+    from datetime import datetime, timezone
+    db = get_db()
+    rows = db.execute("""
+        SELECT a.submitted_at, j.title, j.company
+        FROM applications a
+        JOIN jobs j ON j.id = a.job_id
+        ORDER BY a.submitted_at DESC LIMIT 10
+    """).fetchall()
+
+    def time_ago(ts_str):
+        if not ts_str:
+            return "a while ago"
+        try:
+            ts = datetime.strptime(str(ts_str)[:19], "%Y-%m-%d %H:%M:%S")
+            delta = int((datetime.utcnow() - ts).total_seconds())
+            if delta < 60:
+                return f"{delta}s ago"
+            if delta < 3600:
+                return f"{delta // 60}m ago"
+            if delta < 86400:
+                return f"{delta // 3600}h ago"
+            return f"{delta // 86400}d ago"
+        except Exception:
+            return "recently"
+
+    items = [
+        {"label": f"Applied to {r['title']} at {r['company']} {time_ago(r['submitted_at'])}"}
+        for r in rows
+    ]
+    return jsonify(items)
+
+
 @main_bp.route("/api/last-scrape")
 def api_last_scrape():
     db = get_db()
