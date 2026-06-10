@@ -112,6 +112,7 @@ def jobs():
 
     easy_apply_count = db.execute("SELECT COUNT(*) FROM jobs WHERE easy_apply=1").fetchone()[0]
     cutoff_24h = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S")
+    cutoff_3d  = (datetime.utcnow() - timedelta(days=3)).strftime("%Y-%m-%d %H:%M:%S")
 
     keywords = current_app.config["JOB_BOT"].get("job_search", {}).get("keywords", [])
     jobs = []
@@ -130,6 +131,7 @@ def jobs():
 
     return render_template("templates_jobs.html", jobs=jobs, status=status_filter,
                            counts=counts, heatmap=heatmap, cutoff_24h=cutoff_24h,
+                           cutoff_3d=cutoff_3d,
                            easy_apply_count=easy_apply_count, kanban_cols=kanban_cols)
 
 

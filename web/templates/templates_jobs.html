@@ -187,7 +187,16 @@
             {%- set _t = 'green' if job.score >= 70 else ('yellow' if job.score >= 40 else 'red') -%}
             <span class="match-score match-score--{{ _t }}" title="{{ job.score }}% keyword match">{{ job.score }}</span>
           </td>
-          <td class="td-muted">{{ job.discovered_at | fmtdt }}</td>
+          <td class="td-muted" style="white-space:nowrap">
+            {%- if job.discovered_at >= cutoff_24h -%}
+              <svg class="urgency-dot urgency-dot--green" width="7" height="7" viewBox="0 0 7 7" aria-label="Fresh listing (under 24h)" role="img"><circle cx="3.5" cy="3.5" r="3.5"/></svg>
+            {%- elif job.discovered_at >= cutoff_3d -%}
+              <svg class="urgency-dot urgency-dot--yellow" width="7" height="7" viewBox="0 0 7 7" aria-label="Recent listing (1–3 days)" role="img"><circle cx="3.5" cy="3.5" r="3.5"/></svg>
+            {%- else -%}
+              <svg class="urgency-dot urgency-dot--grey" width="7" height="7" viewBox="0 0 7 7" aria-label="Older listing (3+ days)" role="img"><circle cx="3.5" cy="3.5" r="3.5"/></svg>
+            {%- endif -%}
+            {{ job.discovered_at | fmtdt }}
+          </td>
           <td class="td-actions" style="display:flex;gap:.35rem;align-items:center">
             <a href="{{ job.url }}" target="_blank" rel="noopener" class="btn btn--ghost btn--xs">Open</a>
             <a href="{{ url_for('main.job_detail', job_id=job.id) }}" class="btn btn--ghost btn--xs">Detail</a>

@@ -697,6 +697,17 @@ tbody tr:hover td { background: rgba(255,255,255,.022); }
   padding-right: 2.25rem;
 }
 
+/* ─── Urgency dots ───────────────────────────────────────────────────────── */
+.urgency-dot {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+.urgency-dot--green  { fill: var(--c-green); }
+.urgency-dot--yellow { fill: var(--c-amber); }
+.urgency-dot--grey   { fill: var(--text-3); }
+
 /* ─── Source tag ─────────────────────────────────────────────────────────── */
 .source-tag {
   display: inline-flex;
