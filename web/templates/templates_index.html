@@ -195,6 +195,33 @@
 
 <div class="card">
   <div class="card__header">
+    <span class="card__title">Application Categories</span>
+  </div>
+  <div class="radar-wrap">
+    <svg class="radar-svg" viewBox="0 0 240 240" aria-label="Application activity by category">
+      {% for ring_pts in radar_rings %}
+      <polygon class="radar-grid" points="{{ ring_pts }}"/>
+      {% endfor %}
+      {% for cat in radar_cats %}
+      <line class="radar-axis" x1="120" y1="120" x2="{{ cat.gx }}" y2="{{ cat.gy }}"/>
+      {% endfor %}
+      <polygon class="radar-fill" points="{% for cat in radar_cats %}{{ cat.x }},{{ cat.y }} {% endfor %}"/>
+      <polygon class="radar-stroke" points="{% for cat in radar_cats %}{{ cat.x }},{{ cat.y }} {% endfor %}"/>
+      {% for cat in radar_cats %}
+      <circle class="radar-point" cx="{{ cat.x }}" cy="{{ cat.y }}" r="3"/>
+      {% endfor %}
+      {% for cat in radar_cats %}
+      <text class="radar-label" x="{{ cat.ax }}" y="{{ cat.ay }}"
+            text-anchor="{{ cat.anchor }}" dominant-baseline="{{ cat.baseline }}">
+        {{ cat.label }}{% if cat.count %} ({{ cat.count }}){% endif %}
+      </text>
+      {% endfor %}
+    </svg>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card__header">
     <span class="card__title">Recent Jobs</span>
     <a href="{{ url_for('main.jobs') }}" class="btn btn--ghost btn--sm">View all</a>
   </div>

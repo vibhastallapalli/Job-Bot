@@ -58,11 +58,62 @@ def dashboard():
     cutoff_24h = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%d %H:%M:%S")
 
     from datetime import date
+    import math as _math
     daily_goal = 10
     today = date.today().isoformat()
     ds_row = db.execute("SELECT applied FROM daily_stats WHERE date=?", (today,)).fetchone()
     applied_today = ds_row["applied"] if ds_row else 0
     goal_pct = min(round(applied_today / daily_goal * 100), 100)
+
+    _categories = [
+        ("Mechanical",    "%mechanical%"),
+        ("Mechatronics",  "%mechatronics%"),
+        ("Controls",      "%control%"),
+        ("Automation",    "%automat%"),
+        ("Robotics",      "%robot%"),
+        ("Manufacturing", "%manufactur%"),
+    ]
+    _cat_counts = []
+    for _label, _pat in _categories:
+        _cnt = db.execute(
+            "SELECT COUNT(*) FROM applications a JOIN jobs j ON j.id=a.job_id "
+            "WHERE j.title LIKE ? OR j.description LIKE ?", (_pat, _pat)
+        ).fetchone()[0]
+        _cat_counts.append({"label": _label, "count": _cnt})
+
+    _max_cat = max((c["count"] for c in _cat_counts), default=1) or 1
+    _n = len(_cat_counts)
+    _cx, _cy, _r = 120, 120, 85
+    for _i, _c in enumerate(_cat_counts):
+        _angle = _math.radians(90 + _i * 360 / _n)
+        _pct   = _c["count"] / _max_cat
+        _c["x"]  = round(_cx + _r * _math.cos(_angle) * _pct, 1)
+        _c["y"]  = round(_cy - _r * _math.sin(_angle) * _pct, 1)
+        _c["ax"] = round(_cx + (_r + 22) * _math.cos(_angle), 1)
+        _c["ay"] = round(_cy - (_r + 22) * _math.sin(_angle), 1)
+        _c["gx"] = round(_cx + _r * _math.cos(_angle), 1)
+        _c["gy"] = round(_cy - _r * _math.sin(_angle), 1)
+        if _c["ax"] > _cx + 2:
+            _c["anchor"] = "start"
+        elif _c["ax"] < _cx - 2:
+            _c["anchor"] = "end"
+        else:
+            _c["anchor"] = "middle"
+        if _c["ay"] > _cy + 2:
+            _c["baseline"] = "hanging"
+        elif _c["ay"] < _cy - 2:
+            _c["baseline"] = "auto"
+        else:
+            _c["baseline"] = "middle"
+
+    _rings = []
+    for _frac in (0.25, 0.5, 0.75, 1.0):
+        _pts = " ".join(
+            f"{round(_cx + _r * _frac * _math.cos(_math.radians(90 + _i * 360 / _n)), 1)},"
+            f"{round(_cy - _r * _frac * _math.sin(_math.radians(90 + _i * 360 / _n)), 1)}"
+            for _i in range(_n)
+        )
+        _rings.append(_pts)
 
     return render_template(
         "templates_index.html",
@@ -76,6 +127,9 @@ def dashboard():
         daily_goal=daily_goal,
         goal_pct=goal_pct,
         scheduler_running=_SCHEDULER_ACTIVE,
+        radar_cats=_cat_counts,
+        radar_max=_max_cat,
+        radar_rings=_rings,
     )
 
 
