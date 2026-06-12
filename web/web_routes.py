@@ -494,6 +494,19 @@ def update_job_status(job_id):
     return redirect(url_for("main.job_detail", job_id=job_id))
 
 
+@main_bp.route("/jobs/<int:job_id>/notes", methods=["POST"])
+def save_job_notes(job_id):
+    note = request.form.get("notes", "").strip()
+    db = get_db()
+    if not db.execute("SELECT id FROM jobs WHERE id=?", (job_id,)).fetchone():
+        flash("Job not found.", "error")
+        return redirect(url_for("main.jobs"))
+    db.execute("UPDATE jobs SET notes=? WHERE id=?", (note, job_id))
+    db.commit()
+    flash("Notes saved.", "success")
+    return redirect(url_for("main.job_detail", job_id=job_id))
+
+
 @main_bp.route("/jobs/<int:job_id>/apply", methods=["POST"])
 def apply_job(job_id):
     db = get_db()

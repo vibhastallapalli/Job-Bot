@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     description     TEXT,
     applicant_count INTEGER,
     easy_apply      INTEGER DEFAULT 0,
+    notes           TEXT,
     discovered_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME DEFAULT CURRENT_TIMESTAMP
 );

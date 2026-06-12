@@ -154,4 +154,19 @@
   </div>
 
 </div>
+
+<div class="card notes-card">
+  <div class="card__header">
+    <span class="card__title">Notes</span>
+  </div>
+  <form method="POST" action="{{ url_for('main.save_job_notes', job_id=job.id) }}" class="notes-form">
+    <textarea name="notes" id="job-notes" class="notes-textarea"
+              placeholder="Add your personal notes for this job…"
+              rows="5">{{ job.notes or '' }}</textarea>
+    <div class="notes-footer">
+      <span class="notes-hint" id="notes-hint"></span>
+      <button class="btn btn--primary btn--sm" type="submit">Save notes</button>
+    </div>
+  </form>
+</div>
 {% endblock %}

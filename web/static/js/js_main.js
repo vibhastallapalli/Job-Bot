@@ -1376,6 +1376,21 @@
     .catch(function () {});
 })();
 
+// ── Job notes character hint ──────────────────────────────────────────────
+(function () {
+  var ta   = document.getElementById('job-notes');
+  var hint = document.getElementById('notes-hint');
+  if (!ta || !hint) return;
+
+  function update() {
+    var n = ta.value.length;
+    hint.textContent = n > 0 ? n + ' character' + (n === 1 ? '' : 's') : '';
+  }
+
+  ta.addEventListener('input', update);
+  update();
+})();
+
 // ── Jobs table column sort ────────────────────────────────────────────────
 (function () {
   var headers = document.querySelectorAll('.sortable-th');
