@@ -1376,6 +1376,23 @@
     .catch(function () {});
 })();
 
+// ── Export CSV button — sync search filter into href ─────────────────────
+(function () {
+  var btn         = document.getElementById('export-csv-btn');
+  var filterInput = document.getElementById('job-filter');
+  if (!btn || !filterInput) return;
+
+  filterInput.addEventListener('input', function () {
+    try {
+      var url = new URL(btn.href, window.location.origin);
+      var q   = filterInput.value.trim();
+      if (q) { url.searchParams.set('q', q); }
+      else   { url.searchParams.delete('q'); }
+      btn.href = url.toString();
+    } catch (_) {}
+  });
+})();
+
 // ── Job notes character hint ──────────────────────────────────────────────
 (function () {
   var ta   = document.getElementById('job-notes');

@@ -245,6 +245,46 @@ def move_job(job_id):
     return jsonify({"ok": True})
 
 
+@main_bp.route("/jobs/export")
+def export_jobs_csv():
+    import csv, io
+    from flask import Response
+
+    status_filter = request.args.get("status", "all")
+    q = request.args.get("q", "").strip().lower()
+    db = get_db()
+    keywords = current_app.config["JOB_BOT"].get("job_search", {}).get("keywords", [])
+
+    if status_filter == "all":
+        rows = db.execute("SELECT * FROM jobs ORDER BY discovered_at DESC").fetchall()
+    else:
+        rows = db.execute(
+            "SELECT * FROM jobs WHERE status=? ORDER BY discovered_at DESC", (status_filter,)
+        ).fetchall()
+
+    if q:
+        rows = [r for r in rows
+                if q in (r["title"] or "").lower() or q in (r["company"] or "").lower()]
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["title", "company", "location", "source", "status", "score", "url", "discovered_at"])
+    for row in rows:
+        score = _calc_match_score(row["title"], row["description"], keywords)
+        writer.writerow([
+            row["title"], row["company"], row["location"], row["source"],
+            row["status"], score, row["url"],
+            str(row["discovered_at"])[:16],
+        ])
+
+    filename = f"jobs_{status_filter}.csv"
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
 @main_bp.route("/jobs/scrape", methods=["POST"])
 def scrape_jobs():
     global _SCRAPE_IN_PROGRESS
