@@ -3218,6 +3218,67 @@ body.focus-mode #focus-exit-hint { display: block; }
   .bulk-toolbar { transition: none; }
 }
 
+/* ─── Pipeline funnel ────────────────────────────────────────────────────── */
+.funnel-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.funnel-svg {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.funnel-stage {
+  opacity: .82;
+  transition: opacity .15s;
+}
+.funnel-stage:hover { opacity: 1; }
+
+.funnel-label {
+  font-size: 10.5px;
+  fill: #fff;
+  font-weight: 600;
+  pointer-events: none;
+  letter-spacing: .1px;
+}
+.light .funnel-label { fill: rgba(0,0,0,.7); }
+
+.funnel-legend {
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+  min-width: 130px;
+}
+
+.funnel-legend__item {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+}
+
+.funnel-legend__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.funnel-legend__label {
+  font-size: .8rem;
+  color: var(--text-2);
+  flex: 1;
+}
+
+.funnel-legend__count {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .stats-grid { grid-template-columns: repeat(3, 1fr); }
@@ -3226,4 +3287,5 @@ body.focus-mode #focus-exit-hint { display: block; }
 @media (max-width: 600px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .content { padding-left: 1rem; padding-right: 1rem; }
+  .funnel-wrap { flex-direction: column; gap: 1.25rem; }
 }

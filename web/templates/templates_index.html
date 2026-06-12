@@ -222,6 +222,29 @@
 
 <div class="card">
   <div class="card__header">
+    <span class="card__title">Pipeline Funnel</span>
+  </div>
+  <div class="funnel-wrap">
+    <svg class="funnel-svg" viewBox="0 0 280 282" aria-label="Application pipeline funnel">
+      {% for stage in funnel_stages %}
+      <path class="funnel-stage" d="{{ stage.path }}" fill="{{ stage.color }}"/>
+      <text class="funnel-label" x="140" y="{{ stage.text_y }}" text-anchor="middle" dominant-baseline="middle">{{ stage.label }} — {{ stage.count }}</text>
+      {% endfor %}
+    </svg>
+    <div class="funnel-legend">
+      {% for stage in funnel_stages %}
+      <div class="funnel-legend__item">
+        <span class="funnel-legend__dot" style="background:{{ stage.color }}"></span>
+        <span class="funnel-legend__label">{{ stage.label }}</span>
+        <span class="funnel-legend__count">{{ stage.count }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card__header">
     <span class="card__title">Recent Jobs</span>
     <a href="{{ url_for('main.jobs') }}" class="btn btn--ghost btn--sm">View all</a>
   </div>

@@ -115,6 +115,24 @@ def dashboard():
         )
         _rings.append(_pts)
 
+    _funnel_stages = [
+        {"label": "Discovered", "count": db.execute("SELECT COUNT(*) FROM jobs WHERE status='discovered'").fetchone()[0],  "color": "var(--accent)"},
+        {"label": "Queued",     "count": db.execute("SELECT COUNT(*) FROM jobs WHERE status='queued'").fetchone()[0],      "color": "var(--c-blue)"},
+        {"label": "Applied",    "count": db.execute("SELECT COUNT(*) FROM jobs WHERE status IN ('applied','interview','offer','rejected')").fetchone()[0], "color": "var(--c-amber)"},
+        {"label": "Interview",  "count": db.execute("SELECT COUNT(*) FROM jobs WHERE status IN ('interview','offer')").fetchone()[0], "color": "var(--c-green)"},
+        {"label": "Offer",      "count": db.execute("SELECT COUNT(*) FROM jobs WHERE status='offer'").fetchone()[0],       "color": "#f59e0b"},
+    ]
+    _max_funnel = max(s["count"] for s in _funnel_stages) or 1
+    _fstage_h, _fgap = 50, 8
+    for _fi, _fs in enumerate(_funnel_stages):
+        _fs["hw"]     = round(20 + 100 * (_fs["count"] / _max_funnel))
+        _top_y        = _fi * (_fstage_h + _fgap)
+        _bot_y        = _top_y + _fstage_h
+        _bot_hw       = _funnel_stages[_fi + 1]["hw"] if _fi < len(_funnel_stages) - 1 else max(10, _fs["hw"] - 10)
+        _fs["path"]   = (f"M {140 - _fs['hw']},{_top_y} L {140 + _fs['hw']},{_top_y} "
+                         f"L {140 + _bot_hw},{_bot_y} L {140 - _bot_hw},{_bot_y} Z")
+        _fs["text_y"] = _top_y + 27
+
     return render_template(
         "templates_index.html",
         stats=stats,
@@ -130,6 +148,7 @@ def dashboard():
         radar_cats=_cat_counts,
         radar_max=_max_cat,
         radar_rings=_rings,
+        funnel_stages=_funnel_stages,
     )
 
 
