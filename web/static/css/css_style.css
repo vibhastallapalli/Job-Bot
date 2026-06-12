@@ -3218,6 +3218,31 @@ body.focus-mode #focus-exit-hint { display: block; }
   .bulk-toolbar { transition: none; }
 }
 
+/* ─── Sortable table headers ─────────────────────────────────────────────── */
+.sortable-th {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.sortable-th:hover { color: var(--text); }
+
+.sortable-th::after {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 5px;
+  vertical-align: middle;
+  opacity: .25;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 5px solid currentColor;
+  transition: opacity .14s, transform .14s;
+}
+.sortable-th:hover::after { opacity: .5; }
+.sortable-th.sort-asc::after  { opacity: 1; transform: rotate(0deg); }
+.sortable-th.sort-desc::after { opacity: 1; transform: rotate(180deg); }
+
 /* ─── Pipeline funnel ────────────────────────────────────────────────────── */
 .funnel-wrap {
   display: flex;

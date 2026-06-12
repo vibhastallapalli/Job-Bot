@@ -1376,6 +1376,70 @@
     .catch(function () {});
 })();
 
+// ── Jobs table column sort ────────────────────────────────────────────────
+(function () {
+  var headers = document.querySelectorAll('.sortable-th');
+  var tbody   = document.querySelector('.real-tbody');
+  if (!headers.length || !tbody) return;
+
+  var sortCol = null;
+  var sortAsc = true;
+
+  function cellValue(row, idx) {
+    var cell = row.cells[idx];
+    if (!cell) return '';
+    if (idx === 6) {
+      var ms = cell.querySelector('.match-score');
+      return ms ? parseInt(ms.textContent, 10) || 0 : 0;
+    }
+    return cell.textContent.trim();
+  }
+
+  function updateArrows(activeCol) {
+    headers.forEach(function (th) {
+      var col = th.getAttribute('data-sort-col');
+      th.classList.remove('sort-asc', 'sort-desc');
+      if (col === activeCol) {
+        th.classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
+      }
+    });
+  }
+
+  function sortBy(col) {
+    var idx = parseInt(col, 10);
+    sortAsc = (sortCol === col) ? !sortAsc : true;
+    sortCol = col;
+
+    var rows = Array.from(tbody.querySelectorAll('tr')).filter(function (r) {
+      return r.id !== 'filter-empty-row' && !r.classList.contains('skeleton-row') && r.querySelector('.job-check');
+    });
+
+    rows.sort(function (a, b) {
+      var av = cellValue(a, idx);
+      var bv = cellValue(b, idx);
+      var cmp;
+      if (typeof av === 'number' && typeof bv === 'number') {
+        cmp = av - bv;
+      } else {
+        cmp = String(av).localeCompare(String(bv));
+      }
+      return sortAsc ? cmp : -cmp;
+    });
+
+    var emptyRow = document.getElementById('filter-empty-row');
+    rows.forEach(function (r) { tbody.appendChild(r); });
+    if (emptyRow) tbody.appendChild(emptyRow);
+
+    updateArrows(col);
+  }
+
+  headers.forEach(function (th) {
+    th.addEventListener('click', function () {
+      sortBy(th.getAttribute('data-sort-col'));
+    });
+  });
+})();
+
 // ── Last-scrape live counter ────────────────────────────────────────────────
 (function () {
   var el = document.getElementById('last-scrape-counter');
