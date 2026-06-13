@@ -518,8 +518,24 @@ def job_detail(job_id):
     _kws = current_app.config["JOB_BOT"].get("job_search", {}).get("keywords", [])
     match_score = _calc_match_score(job["title"], job["description"], _kws)
 
+    interview_countdown = None
+    if job["interview_date"]:
+        from datetime import datetime as _dt
+        try:
+            _idt = _dt.strptime(job["interview_date"][:16], "%Y-%m-%dT%H:%M")
+            _delta = _idt - _dt.now()
+            _days = _delta.days
+            if _days > 0:
+                interview_countdown = f"in {_days} day{'s' if _days != 1 else ''}"
+            elif _days < 0:
+                interview_countdown = f"{abs(_days)} day{'s' if abs(_days) != 1 else ''} ago"
+            else:
+                interview_countdown = "today"
+        except ValueError:
+            pass
+
     return render_template("templates_job_detail.html", job=job, timeline=timeline,
-                           match_score=match_score)
+                           match_score=match_score, interview_countdown=interview_countdown)
 
 
 @main_bp.route("/jobs/<int:job_id>/status", methods=["POST"])
@@ -551,6 +567,19 @@ def save_job_notes(job_id):
     db.execute("UPDATE jobs SET notes=? WHERE id=?", (note, job_id))
     db.commit()
     flash("Notes saved.", "success")
+    return redirect(url_for("main.job_detail", job_id=job_id))
+
+
+@main_bp.route("/jobs/<int:job_id>/interview-date", methods=["POST"])
+def save_interview_date(job_id):
+    date_val = request.form.get("interview_date", "").strip()
+    db = get_db()
+    if not db.execute("SELECT id FROM jobs WHERE id=?", (job_id,)).fetchone():
+        flash("Job not found.", "error")
+        return redirect(url_for("main.jobs"))
+    db.execute("UPDATE jobs SET interview_date=? WHERE id=?", (date_val or None, job_id))
+    db.commit()
+    flash("Interview date saved." if date_val else "Interview date cleared.", "success")
     return redirect(url_for("main.job_detail", job_id=job_id))
 
 

@@ -155,6 +155,32 @@
 
 </div>
 
+<div class="card interview-date-card">
+  <div class="card__header">
+    <span class="card__title">Interview Date</span>
+    {% if job.interview_date and interview_countdown %}
+    <span class="interview-countdown
+      {%- if 'ago' in interview_countdown %} interview-countdown--past
+      {%- elif interview_countdown == 'today' %} interview-countdown--today
+      {%- else %} interview-countdown--future{% endif %}">
+      {{ interview_countdown }}
+    </span>
+    {% endif %}
+  </div>
+  <form method="POST" action="{{ url_for('main.save_interview_date', job_id=job.id) }}"
+        class="interview-date-form">
+    <input type="datetime-local" name="interview_date" class="form-input interview-date-input"
+           value="{{ job.interview_date or '' }}"
+           placeholder="Pick a date and time">
+    <div style="display:flex;gap:.5rem;margin-top:.75rem">
+      <button class="btn btn--primary btn--sm" type="submit">Save</button>
+      {% if job.interview_date %}
+      <button class="btn btn--ghost btn--sm" type="submit" name="interview_date" value="">Clear</button>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
 <div class="card notes-card">
   <div class="card__header">
     <span class="card__title">Notes</span>
