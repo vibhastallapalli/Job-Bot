@@ -316,15 +316,29 @@
   var tbody = document.querySelector('.real-tbody');
   if (!pill || !tbody) return;
 
+  var totalAll  = parseInt(pill.getAttribute('data-total'),  10) || 0;
+  var curPage   = parseInt(pill.getAttribute('data-page'),   10) || 1;
+  var totalPages= parseInt(pill.getAttribute('data-pages'),  10) || 1;
+
   var jobRows = Array.from(tbody.querySelectorAll('tr')).filter(function (r) {
     return r.querySelector('.job-check');
   });
-  var total = jobRows.length;
+  var pageCount = jobRows.length;
 
   function update() {
+    var q       = input ? input.value.trim() : '';
     var visible = jobRows.filter(function (r) { return r.style.display !== 'none'; }).length;
-    pill.innerHTML = '<strong>' + visible + '</strong> of ' + total + ' jobs';
-    pill.classList.toggle('jobs-vis-counter--visible', total > 0);
+    var html;
+    if (q) {
+      html = '<strong>' + visible + '</strong> of ' + pageCount + ' on this page match';
+    } else if (totalPages > 1) {
+      html = 'Page <strong>' + curPage + '</strong> of ' + totalPages
+           + ' &ensp;·&ensp; <strong>' + totalAll + '</strong> total';
+    } else {
+      html = '<strong>' + pageCount + '</strong> job' + (pageCount !== 1 ? 's' : '');
+    }
+    pill.innerHTML = html;
+    pill.classList.toggle('jobs-vis-counter--visible', pageCount > 0);
   }
 
   if (input) input.addEventListener('input', function () { setTimeout(update, 0); });

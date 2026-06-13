@@ -3398,6 +3398,29 @@ body.focus-mode #focus-exit-hint { display: block; }
   font-weight: 600;
 }
 
+/* ─── Pagination ─────────────────────────────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  margin: .75rem 0 .5rem;
+}
+
+.pg-indicator {
+  font-size: .82rem;
+  color: var(--text-2);
+  font-weight: 500;
+  min-width: 90px;
+  text-align: center;
+}
+
+.pg-btn--disabled {
+  opacity: .35;
+  pointer-events: none;
+  cursor: default;
+}
+
 /* ─── Interview date card ────────────────────────────────────────────────── */
 .interview-date-card .card__header { align-items: center; }
 

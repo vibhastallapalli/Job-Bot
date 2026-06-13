@@ -261,7 +261,29 @@
   </div>
 </div>
 
-<div id="jobs-vis-counter" class="jobs-vis-counter" aria-live="polite" aria-label="Visible job count"></div>
+<div id="jobs-vis-counter" class="jobs-vis-counter"
+     data-total="{{ total_count }}" data-page="{{ page }}" data-pages="{{ total_pages }}"
+     aria-live="polite" aria-label="Visible job count"></div>
+
+{% if total_pages > 1 %}
+<nav class="pagination" aria-label="Jobs pagination">
+  {% if page > 1 %}
+  <a href="{{ url_for('main.jobs') }}?status={{ status }}&page={{ page - 1 }}"
+     class="btn btn--ghost btn--sm pg-btn">&#8592; Prev</a>
+  {% else %}
+  <span class="btn btn--ghost btn--sm pg-btn pg-btn--disabled" aria-disabled="true">&#8592; Prev</span>
+  {% endif %}
+
+  <span class="pg-indicator">Page {{ page }} of {{ total_pages }}</span>
+
+  {% if page < total_pages %}
+  <a href="{{ url_for('main.jobs') }}?status={{ status }}&page={{ page + 1 }}"
+     class="btn btn--ghost btn--sm pg-btn">Next &#8594;</a>
+  {% else %}
+  <span class="btn btn--ghost btn--sm pg-btn pg-btn--disabled" aria-disabled="true">Next &#8594;</span>
+  {% endif %}
+</nav>
+{% endif %}
 
 <div class="shortcut-bar" aria-label="Keyboard shortcuts">
   <span><kbd>J</kbd> / <kbd>K</kbd> &thinsp; Navigate</span>

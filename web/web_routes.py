@@ -161,18 +161,38 @@ def dashboard():
 
 # ── Jobs list ──────────────────────────────────────────────────────────────
 
+_PAGE_SIZE = 25
+
+
 @main_bp.route("/jobs")
 def jobs():
+    import math as _math
     from datetime import datetime, timedelta
     status_filter = request.args.get("status", "all")
     db = get_db()
 
+    try:
+        page = max(1, int(request.args.get("page", 1) or 1))
+    except (ValueError, TypeError):
+        page = 1
+
     if status_filter == "all":
-        job_rows = db.execute("SELECT * FROM jobs ORDER BY discovered_at DESC").fetchall()
-    else:
+        total_count = db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
         job_rows = db.execute(
-            "SELECT * FROM jobs WHERE status=? ORDER BY discovered_at DESC", (status_filter,)
+            "SELECT * FROM jobs ORDER BY discovered_at DESC LIMIT ? OFFSET ?",
+            (_PAGE_SIZE, (page - 1) * _PAGE_SIZE),
         ).fetchall()
+    else:
+        total_count = db.execute(
+            "SELECT COUNT(*) FROM jobs WHERE status=?", (status_filter,)
+        ).fetchone()[0]
+        job_rows = db.execute(
+            "SELECT * FROM jobs WHERE status=? ORDER BY discovered_at DESC LIMIT ? OFFSET ?",
+            (status_filter, _PAGE_SIZE, (page - 1) * _PAGE_SIZE),
+        ).fetchall()
+
+    total_pages = max(1, _math.ceil(total_count / _PAGE_SIZE))
+    page = min(page, total_pages)
 
     counts = {s: db.execute("SELECT COUNT(*) FROM jobs WHERE status=?", (s,)).fetchone()[0]
               for s in ("discovered", "applied", "interview", "rejected", "queued")}
@@ -197,11 +217,11 @@ def jobs():
     cutoff_3d  = (datetime.utcnow() - timedelta(days=3)).strftime("%Y-%m-%d %H:%M:%S")
 
     keywords = current_app.config["JOB_BOT"].get("job_search", {}).get("keywords", [])
-    jobs = []
+    jobs_list = []
     for row in job_rows:
         j = dict(row)
         j["score"] = _calc_match_score(j.get("title", ""), j.get("description", ""), keywords)
-        jobs.append(j)
+        jobs_list.append(j)
 
     all_jobs_kb = db.execute("SELECT * FROM jobs ORDER BY discovered_at DESC").fetchall()
     kanban_cols = {"discovered": [], "applied": [], "interview": [], "offer": []}
@@ -211,10 +231,11 @@ def jobs():
         if j["status"] in kanban_cols:
             kanban_cols[j["status"]].append(j)
 
-    return render_template("templates_jobs.html", jobs=jobs, status=status_filter,
+    return render_template("templates_jobs.html", jobs=jobs_list, status=status_filter,
                            counts=counts, heatmap=heatmap, cutoff_24h=cutoff_24h,
-                           cutoff_3d=cutoff_3d,
-                           easy_apply_count=easy_apply_count, kanban_cols=kanban_cols)
+                           cutoff_3d=cutoff_3d, easy_apply_count=easy_apply_count,
+                           kanban_cols=kanban_cols, page=page, total_pages=total_pages,
+                           total_count=total_count, page_size=_PAGE_SIZE)
 
 
 @main_bp.route("/jobs/search")
