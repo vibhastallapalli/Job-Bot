@@ -60,10 +60,16 @@ def dashboard():
     from datetime import date
     import math as _math
     daily_goal = 10
-    today = date.today().isoformat()
-    ds_row = db.execute("SELECT applied FROM daily_stats WHERE date=?", (today,)).fetchone()
+    today = date.today()
+    ds_row = db.execute("SELECT applied FROM daily_stats WHERE date=?", (today.isoformat(),)).fetchone()
     applied_today = ds_row["applied"] if ds_row else 0
     goal_pct = min(round(applied_today / daily_goal * 100), 100)
+
+    _trend_days = []
+    for _i in range(6, -1, -1):
+        _d = today - timedelta(days=_i)
+        _dr = db.execute("SELECT applied FROM daily_stats WHERE date=?", (_d.isoformat(),)).fetchone()
+        _trend_days.append({"label": _d.strftime("%a"), "count": _dr["applied"] if _dr else 0, "is_today": _i == 0})
 
     _categories = [
         ("Mechanical",    "%mechanical%"),
@@ -149,6 +155,7 @@ def dashboard():
         radar_max=_max_cat,
         radar_rings=_rings,
         funnel_stages=_funnel_stages,
+        trend_days=_trend_days,
     )
 
 

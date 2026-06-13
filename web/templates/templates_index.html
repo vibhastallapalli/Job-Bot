@@ -143,6 +143,33 @@
   <div class="daily-goal__burst" id="dg-burst" aria-hidden="true"></div>
 </div>
 
+<div class="card trend-card">
+  <div class="card__header">
+    <span class="card__title">Applications — Last 7 Days</span>
+    <span class="trend-total">{{ trend_days | sum(attribute='count') }} this week</span>
+  </div>
+  {% set _max = namespace(v=1) %}
+  {% for d in trend_days %}{% if d.count > _max.v %}{% set _max.v = d.count %}{% endif %}{% endfor %}
+  <div class="trend-wrap">
+    <svg class="trend-svg" viewBox="0 0 280 110" aria-label="Applications over the last 7 days">
+      <line class="trend-baseline" x1="0" y1="82" x2="280" y2="82"/>
+      {% for day in trend_days %}
+        {% set _col_x = loop.index0 * 40 %}
+        {% set _bar_h = ((day.count / _max.v) * 68) | round | int if _max.v > 0 else 0 %}
+        {% set _bar_y = 82 - _bar_h %}
+        <rect class="trend-bar{% if day.is_today %} trend-bar--today{% endif %}"
+              x="{{ _col_x + 7 }}" y="{{ _bar_y if _bar_h > 0 else 82 }}"
+              width="26" height="{{ _bar_h if _bar_h > 0 else 2 }}" rx="3"/>
+        {% if day.count > 0 %}
+        <text class="trend-count" x="{{ _col_x + 20 }}" y="{{ _bar_y - 5 }}" text-anchor="middle">{{ day.count }}</text>
+        {% endif %}
+        <text class="trend-label{% if day.is_today %} trend-label--today{% endif %}"
+              x="{{ _col_x + 20 }}" y="98" text-anchor="middle">{{ day.label }}</text>
+      {% endfor %}
+    </svg>
+  </div>
+</div>
+
 <div class="quote-card" id="quote-card">
   <blockquote class="quote-card__text" id="quote-text"></blockquote>
   <cite class="quote-card__author" id="quote-author"></cite>

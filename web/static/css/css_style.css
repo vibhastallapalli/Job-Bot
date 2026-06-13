@@ -3342,6 +3342,62 @@ body.focus-mode #focus-exit-hint { display: block; }
   color: var(--text);
 }
 
+/* ─── 7-day trend bar chart ──────────────────────────────────────────────── */
+.trend-card .card__header { align-items: center; }
+
+.trend-total {
+  font-size: .8rem;
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+.trend-wrap {
+  padding: .5rem .25rem .25rem;
+}
+
+.trend-svg {
+  width: 100%;
+  max-width: 420px;
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.trend-baseline {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.trend-bar {
+  fill: var(--accent);
+  opacity: .65;
+  transition: opacity .15s;
+}
+
+.trend-bar--today {
+  opacity: 1;
+}
+
+.trend-bar:hover {
+  opacity: 1;
+}
+
+.trend-count {
+  font-size: 9px;
+  fill: var(--text-2);
+  font-weight: 600;
+}
+
+.trend-label {
+  font-size: 9.5px;
+  fill: var(--text-3);
+}
+
+.trend-label--today {
+  fill: var(--accent);
+  font-weight: 600;
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .stats-grid { grid-template-columns: repeat(3, 1fr); }
