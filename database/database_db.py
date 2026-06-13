@@ -40,6 +40,7 @@ def migrate_db():
         "ALTER TABLE jobs ADD COLUMN easy_apply      INTEGER DEFAULT 0",
         "ALTER TABLE jobs ADD COLUMN notes           TEXT",
         "ALTER TABLE jobs ADD COLUMN interview_date  TEXT",
+        "ALTER TABLE jobs ADD COLUMN starred         INTEGER DEFAULT 0",
     ]
     conn = sqlite3.connect(DB_PATH)
     for sql in new_columns:

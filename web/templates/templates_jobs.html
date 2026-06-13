@@ -210,6 +210,16 @@
             {{ job.discovered_at | fmtdt }}
           </td>
           <td class="td-actions" style="display:flex;gap:.35rem;align-items:center">
+            <button class="star-btn{% if job.starred %} star-btn--on{% endif %}"
+                    data-job-id="{{ job.id }}"
+                    title="{{ 'Unstar' if job.starred else 'Star' }} this job"
+                    aria-label="{{ 'Starred' if job.starred else 'Not starred' }}"
+                    type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </button>
             <a href="{{ job.url }}" target="_blank" rel="noopener" class="btn btn--ghost btn--xs">Open</a>
             <a href="{{ url_for('main.job_detail', job_id=job.id) }}" class="btn btn--ghost btn--xs">Detail</a>
           </td>

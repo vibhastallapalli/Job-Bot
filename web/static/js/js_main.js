@@ -1407,6 +1407,29 @@
   });
 })();
 
+// ── Star / favourite toggle ───────────────────────────────────────────────
+(function () {
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.star-btn');
+    if (!btn) return;
+    var jobId = btn.getAttribute('data-job-id');
+    if (!jobId) return;
+
+    fetch('/jobs/' + jobId + '/star', { method: 'POST' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d.ok) return;
+        var on = d.starred;
+        btn.classList.toggle('star-btn--on', on);
+        btn.title = on ? 'Unstar this job' : 'Star this job';
+        btn.setAttribute('aria-label', on ? 'Starred' : 'Not starred');
+        var label = btn.querySelector('.star-btn__label');
+        if (label) label.textContent = on ? 'Starred' : 'Star';
+      })
+      .catch(function () {});
+  });
+})();
+
 // ── Job notes character hint ──────────────────────────────────────────────
 (function () {
   var ta   = document.getElementById('job-notes');

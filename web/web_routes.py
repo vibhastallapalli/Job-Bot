@@ -179,7 +179,7 @@ def jobs():
     if status_filter == "all":
         total_count = db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
         job_rows = db.execute(
-            "SELECT * FROM jobs ORDER BY discovered_at DESC LIMIT ? OFFSET ?",
+            "SELECT * FROM jobs ORDER BY COALESCE(starred,0) DESC, discovered_at DESC LIMIT ? OFFSET ?",
             (_PAGE_SIZE, (page - 1) * _PAGE_SIZE),
         ).fetchall()
     else:
@@ -187,7 +187,7 @@ def jobs():
             "SELECT COUNT(*) FROM jobs WHERE status=?", (status_filter,)
         ).fetchone()[0]
         job_rows = db.execute(
-            "SELECT * FROM jobs WHERE status=? ORDER BY discovered_at DESC LIMIT ? OFFSET ?",
+            "SELECT * FROM jobs WHERE status=? ORDER BY COALESCE(starred,0) DESC, discovered_at DESC LIMIT ? OFFSET ?",
             (status_filter, _PAGE_SIZE, (page - 1) * _PAGE_SIZE),
         ).fetchall()
 
@@ -602,6 +602,18 @@ def save_interview_date(job_id):
     db.commit()
     flash("Interview date saved." if date_val else "Interview date cleared.", "success")
     return redirect(url_for("main.job_detail", job_id=job_id))
+
+
+@main_bp.route("/jobs/<int:job_id>/star", methods=["POST"])
+def star_job(job_id):
+    db = get_db()
+    row = db.execute("SELECT starred FROM jobs WHERE id=?", (job_id,)).fetchone()
+    if not row:
+        return jsonify({"ok": False, "error": "not found"}), 404
+    new_val = 0 if row["starred"] else 1
+    db.execute("UPDATE jobs SET starred=? WHERE id=?", (new_val, job_id))
+    db.commit()
+    return jsonify({"ok": True, "starred": bool(new_val)})
 
 
 @main_bp.route("/jobs/<int:job_id>/apply", methods=["POST"])
