@@ -55,7 +55,13 @@
     "website": "",
     "city": "Your City",
     "state": "Your Province/State",
-    "country": "Your Country"
+    "country": "Your Country",
+    "bio": "One or two sentences on who you are and what you do.",
+    "experience": [
+      "Each list item becomes one retrievable chunk for the RAG layer.",
+      "Add concrete accomplishments here: a project, a co-op, a skill with impact.",
+      "The AI form filler retrieves only the items relevant to each question."
+    ]
   },
   "microsoft": {
     "client_id": "",

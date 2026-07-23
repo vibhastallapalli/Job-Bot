@@ -51,4 +51,19 @@ CREATE TABLE IF NOT EXISTS daily_stats (
     date    TEXT    PRIMARY KEY,
     applied INTEGER DEFAULT 0
 );
+
+-- Retrieval store for the RAG layer (modules/rag). Each row is one embedded
+-- chunk of the applicant's background; "source" groups chunks (e.g. 'profile')
+-- and "ref_id" optionally ties a chunk back to another table's row.
+CREATE TABLE IF NOT EXISTS rag_chunks (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    source     TEXT    NOT NULL,
+    ref_id     INTEGER,
+    chunk      TEXT    NOT NULL,
+    dim        INTEGER NOT NULL,
+    vector     TEXT    NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_rag_chunks_source ON rag_chunks(source);
 """

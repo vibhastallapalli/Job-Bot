@@ -16,6 +16,25 @@ import anthropic
 MODEL = "claude-sonnet-4-6"
 
 
+def _profile_context(question_label: str, job: dict, config: dict, full_bio: str) -> str:
+    """
+    Ground the answer in the applicant's background.
+
+    Prefers the RAG layer (retrieve only the chunks relevant to this question +
+    job); falls back to the full bio if nothing is indexed or retrieval fails.
+    Wrapped so the AI path never breaks because of the retrieval layer.
+    """
+    try:
+        from modules.rag import build_context
+
+        block = build_context(question_label, job, k=3)
+        if block:
+            return block
+    except Exception:
+        pass
+    return f"Bio: {full_bio}"
+
+
 def answer_question(
     question_label: str,
     field_type: str,
@@ -52,13 +71,15 @@ def answer_question(
     else:
         field_instruction = "Answer in 3 sentences or fewer. Do not add a greeting or sign-off."
 
+    profile_context = _profile_context(question_label, job, config, bio)
+
     prompt = f"""\
 You are helping {name} fill out a job application for {job_title} at {company}.
 
 Applicant profile:
   Name: {name}
   Years of experience: {years_exp}
-  Bio: {bio}
+  {profile_context}
 
 Form question: {question_label}
 

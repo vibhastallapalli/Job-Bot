@@ -19,6 +19,18 @@ def create_app():
     app.secret_key = app.config["JOB_BOT"].get("secret_key", "dev-secret-change-me")
 
     init_db()
+
+    # Build the RAG index over the applicant's background so the AI form filler
+    # retrieves only relevant chunks per question instead of pasting the whole
+    # bio. Best-effort: a failure here must never stop the app from booting.
+    try:
+        from modules.rag import index_profile
+        n_chunks = index_profile(app.config["JOB_BOT"])
+        if n_chunks:
+            app.logger.info("RAG: indexed %d profile chunk(s)", n_chunks)
+    except Exception as exc:  # pragma: no cover
+        app.logger.warning("RAG: profile indexing skipped (%s)", exc)
+
     app.teardown_appcontext(close_db)
     app.register_blueprint(main_bp)
 
